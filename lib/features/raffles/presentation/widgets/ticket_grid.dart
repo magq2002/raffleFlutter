@@ -3,28 +3,34 @@ import '../../domain/entities/ticket.dart';
 
 class TicketGrid extends StatelessWidget {
   final List<Ticket> tickets;
+  final void Function(Ticket)? onTap;
 
-  const TicketGrid({super.key, required this.tickets});
+  const TicketGrid({
+    super.key,
+    required this.tickets,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    const int columns = 10;
-
     return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: tickets.map((ticket) {
-        return Container(
-          width: 30,
-          height: 30,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: _getColor(ticket.status),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Text(
-            ticket.number.toString(),
-            style: const TextStyle(color: Colors.white, fontSize: 12),
+        return GestureDetector(
+          onTap: () => onTap?.call(ticket),
+          child: Container(
+            width: 30,
+            height: 30,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: _getColor(ticket.status),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              ticket.number.toString(),
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+            ),
           ),
         );
       }).toList(),

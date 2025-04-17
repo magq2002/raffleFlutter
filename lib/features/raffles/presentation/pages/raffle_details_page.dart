@@ -1,112 +1,159 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/raffle.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:raffle/features/raffles/domain/entities/raffle.dart';
+
 import '../../domain/entities/ticket.dart';
+import '../bloc/raffle_cubit.dart';
+import '../bloc/raffle_state.dart';
 import '../widgets/financial_summary.dart';
-import '../widgets/ticket_grid.dart';
 import '../widgets/status_modal.dart';
+import '../widgets/ticket_grid.dart';
+import '../widgets/ticket_info_modal.dart';
+import '../widgets/ticket_modal.dart';
 
 class RaffleDetailsPage extends StatefulWidget {
-  final Raffle raffle;
-  final List<Ticket> tickets;
-
-  const RaffleDetailsPage({
-    super.key,
-    required this.raffle,
-    required this.tickets,
-  });
+  const RaffleDetailsPage({super.key});
 
   @override
   State<RaffleDetailsPage> createState() => _RaffleDetailsPageState();
 }
 
 class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
-  late Raffle raffle;
-  late List<Ticket> tickets;
-
-  @override
-  void initState() {
-    super.initState();
-    raffle = widget.raffle;
-    tickets = widget.tickets;
-  }
-
-  void _showStatusModal() {
-    showDialog(
-      context: context,
-      builder: (_) => StatusModal(
-        currentStatus: raffle.status,
-        onSelect: (newStatus) {
-          setState(() {
-            raffle = Raffle(
-              id: raffle.id,
-              name: raffle.name,
-              lotteryNumber: raffle.lotteryNumber,
-              price: raffle.price,
-              totalTickets: raffle.totalTickets,
-              status: newStatus,
-              deleted: raffle.deleted,
-              deletedAt: raffle.deletedAt,
-              createdAt: raffle.createdAt,
-              updatedAt: DateTime.now(),
-            );
-          });
-          Navigator.pop(context);
-        },
-        onClose: () => Navigator.pop(context),
-      ),
-    );
-  }
+  Ticket? selectedTicket;
+  bool showInfoModal = false;
+  bool showEditModal = false;
 
   @override
   Widget build(BuildContext context) {
-    final financials = _calculateFinancials();
+    return BlocBuilder<RaffleCubit, RaffleState>(
+      builder: (context, state) {
+        if (state.loading) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(raffle.name, style: const TextStyle(fontSize: 18)),
-            Text('#${raffle.lotteryNumber}',
-                style: const TextStyle(fontSize: 12, color: Colors.grey)),
-          ],
-        ),
-        actions: [
-          TextButton.icon(
-            onPressed: _showStatusModal,
-            icon: const Icon(Icons.edit, color: Colors.white),
-            label: Text(
-              raffle.status.toUpperCase(),
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-        backgroundColor: Colors.black,
-      ),
-      backgroundColor: const Color(0xFF121212),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            FinancialSummary(financials: financials),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        if (state.raffle == null) {
+          return const Scaffold(
+            body: Center(child: Text('No raffle data found')),
+          );
+        }
+
+        final raffle = state.raffle!;
+        final tickets = state.tickets;
+        final financials = _calculateFinancials(raffle, tickets);
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _statCard('Price', '\$${raffle.price}', Colors.greenAccent),
-                _statCard(
-                    'Total', raffle.totalTickets.toString(), Colors.blueAccent),
-                _statCard('Sold', financials['soldTickets'].toString(),
-                    Colors.redAccent),
+                Text(raffle.name, style: const TextStyle(fontSize: 18)),
+                Text('#${raffle.lotteryNumber}',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
               ],
             ),
-            const SizedBox(height: 16),
-            _buildLegend(financials),
-            const SizedBox(height: 16),
-            TicketGrid(tickets: tickets),
-          ],
-        ),
-      ),
+            actions: [
+              TextButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (_) => StatusModal(
+                      currentStatus: raffle.status,
+                      onSelect: (newStatus) {
+                        context
+                            .read<RaffleCubit>()
+                            .updateRaffleStatus(newStatus);
+                        Navigator.pop(context);
+                      },
+                      onClose: () => Navigator.pop(context),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.edit, color: Colors.white),
+                label: Text(
+                  raffle.status.toUpperCase(),
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+            backgroundColor: Colors.black,
+          ),
+          backgroundColor: const Color(0xFF121212),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                FinancialSummary(financials: financials),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    _statCard('Price', '\$${raffle.price}', Colors.greenAccent),
+                    _statCard('Total', raffle.totalTickets.toString(),
+                        Colors.blueAccent),
+                    _statCard('Sold', financials['soldTickets'].toString(),
+                        Colors.redAccent),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                _buildLegend(financials),
+                const SizedBox(height: 16),
+                TicketGrid(
+                  tickets: tickets,
+                  onTap: (ticket) {
+                    setState(() {
+                      selectedTicket = ticket;
+                      showInfoModal = true;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+          floatingActionButton: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TicketInfoModal(
+                ticket: selectedTicket,
+                visible: showInfoModal,
+                onClose: () {
+                  setState(() {
+                    showInfoModal = false;
+                    selectedTicket = null;
+                  });
+                },
+                onEdit: () {
+                  setState(() {
+                    showInfoModal = false;
+                    showEditModal = true;
+                  });
+                },
+              ),
+              TicketModal(
+                ticket: selectedTicket,
+                visible: showEditModal,
+                onClose: () {
+                  setState(() {
+                    showEditModal = false;
+                    selectedTicket = null;
+                  });
+                },
+                onUpdate: (ticketId,
+                    {required status, buyerName, buyerContact}) async {
+                  context.read<RaffleCubit>().updateTicket(
+                        ticketId,
+                        status: status,
+                        buyerName: buyerName,
+                        buyerContact: buyerContact,
+                      );
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -159,7 +206,8 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
     );
   }
 
-  Map<String, dynamic> _calculateFinancials() {
+  Map<String, dynamic> _calculateFinancials(
+      Raffle raffle, List<Ticket> tickets) {
     final sold = tickets.where((t) => t.status == 'sold').length;
     final reserved = tickets.where((t) => t.status == 'reserved').length;
     final available = tickets.where((t) => t.status == 'available').length;
