@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:raffle/features/raffles/domain/entities/raffle.dart';
-
 import '../../domain/entities/ticket.dart';
+import '../../domain/entities/raffle.dart';
 import '../bloc/raffle_cubit.dart';
 import '../bloc/raffle_state.dart';
-import '../widgets/financial_summary.dart';
-import '../widgets/status_modal.dart';
 import '../widgets/ticket_grid.dart';
+import '../widgets/status_modal.dart';
 import '../widgets/ticket_info_modal.dart';
 import '../widgets/ticket_modal.dart';
+import '../widgets/financial_summary.dart';
 
 class RaffleDetailsPage extends StatefulWidget {
   const RaffleDetailsPage({super.key});
@@ -20,6 +18,7 @@ class RaffleDetailsPage extends StatefulWidget {
 }
 
 class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
+  bool showStatusModal = false;
   Ticket? selectedTicket;
   bool showInfoModal = false;
   bool showEditModal = false;
@@ -28,78 +27,61 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<RaffleCubit, RaffleState>(
       builder: (context, state) {
+        final raffle = state.raffle;
+        final tickets = state.tickets;
+
         if (state.loading) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
-        if (state.raffle == null) {
+        if (raffle == null) {
           return const Scaffold(
-            body: Center(child: Text('No raffle data found')),
+            body: Center(child: Text('Raffle not found')),
           );
         }
 
-        final raffle = state.raffle!;
-        final tickets = state.tickets;
-        final financials = _calculateFinancials(raffle, tickets);
-
         return Scaffold(
+          backgroundColor: const Color(0xFF121212),
           appBar: AppBar(
+            backgroundColor: Colors.black,
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(raffle.name, style: const TextStyle(fontSize: 18)),
+                Text(raffle.name),
                 Text('#${raffle.lotteryNumber}',
-                    style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey))
               ],
             ),
             actions: [
               TextButton.icon(
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => StatusModal(
-                      currentStatus: raffle.status,
-                      onSelect: (newStatus) {
-                        context
-                            .read<RaffleCubit>()
-                            .updateRaffleStatus(newStatus);
-                        Navigator.pop(context);
-                      },
-                      onClose: () => Navigator.pop(context),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.edit, color: Colors.white),
-                label: Text(
-                  raffle.status.toUpperCase(),
-                  style: const TextStyle(color: Colors.white),
+                style: TextButton.styleFrom(
+                  backgroundColor: _getStatusColor(raffle.status),
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
                 ),
+                onPressed: () => setState(() => showStatusModal = true),
+                icon: const Icon(Icons.arrow_drop_down),
+                label: Text(raffle.status.capitalize()),
               ),
+              const SizedBox(width: 12),
             ],
-            backgroundColor: Colors.black,
           ),
-          backgroundColor: const Color(0xFF121212),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FinancialSummary(financials: financials),
+                FinancialSummary(raffle: raffle, tickets: tickets),
                 const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _statCard('Price', '\$${raffle.price}', Colors.greenAccent),
-                    _statCard('Total', raffle.totalTickets.toString(),
-                        Colors.blueAccent),
-                    _statCard('Sold', financials['soldTickets'].toString(),
-                        Colors.redAccent),
-                  ],
-                ),
+                _buildStats(raffle, tickets),
                 const SizedBox(height: 16),
-                _buildLegend(financials),
-                const SizedBox(height: 16),
+                _buildLegend(tickets),
+                const SizedBox(height: 8),
                 TicketGrid(
                   tickets: tickets,
                   onTap: (ticket) {
@@ -109,117 +91,140 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                     });
                   },
                 ),
+                if (raffle.status == 'expired')
+                  Padding(
+                    padding: const EdgeInsets.only(top: 32),
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      icon: const Icon(Icons.delete),
+                      label: const Text(
+                        'Move to Trash',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: () => _confirmDelete(context),
+                    ),
+                  ),
               ],
             ),
           ),
-          floatingActionButton: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TicketInfoModal(
-                ticket: selectedTicket,
-                visible: showInfoModal,
-                onClose: () {
-                  setState(() {
-                    showInfoModal = false;
-                    selectedTicket = null;
-                  });
-                },
-                onEdit: () {
-                  setState(() {
-                    showInfoModal = false;
-                    showEditModal = true;
-                  });
-                },
-              ),
-              TicketModal(
-                ticket: selectedTicket,
-                visible: showEditModal,
-                onClose: () {
-                  setState(() {
-                    showEditModal = false;
-                    selectedTicket = null;
-                  });
-                },
-                onUpdate: (ticketId,
-                    {required status, buyerName, buyerContact}) async {
-                  context.read<RaffleCubit>().updateTicket(
-                        ticketId,
-                        status: status,
-                        buyerName: buyerName,
-                        buyerContact: buyerContact,
-                      );
-                },
-              ),
-            ],
-          ),
+          // Modals
+          bottomSheet: showStatusModal
+              ? StatusModal(
+                  currentStatus: raffle.status,
+                  onSelect: (newStatus) {
+                    context.read<RaffleCubit>().updateRaffleStatus(newStatus);
+                    setState(() => showStatusModal = false);
+                  },
+                  onClose: () => setState(() => showStatusModal = false),
+                )
+              : null,
         );
       },
     );
   }
 
-  Widget _statCard(String label, String value, Color color) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1e1e1e),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Text(value,
-                style: TextStyle(
-                    fontSize: 16, fontWeight: FontWeight.bold, color: color)),
-            const SizedBox(height: 4),
-            Text(label,
-                style: const TextStyle(color: Colors.white60, fontSize: 12)),
-          ],
-        ),
-      ),
-    );
-  }
+  Widget _buildStats(Raffle raffle, List<Ticket> tickets) {
+    final sold = tickets.where((t) => t.status == 'sold').length;
+    final reserved = tickets.where((t) => t.status == 'reserved').length;
 
-  Widget _buildLegend(Map<String, dynamic> financials) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        _legendItem('Available', Colors.green, financials['availableTickets']),
-        _legendItem('Reserved', Colors.orange, financials['reservedTickets']),
-        _legendItem('Sold', Colors.red, financials['soldTickets']),
+        _statCard('\$${raffle.price}', 'Price'),
+        _statCard('${raffle.totalTickets}', 'Total Tickets'),
+        _statCard('$sold', 'Sold'),
       ],
     );
   }
 
-  Widget _legendItem(String label, Color color, int count) {
-    return Row(
-      children: [
-        Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-                color: color, borderRadius: BorderRadius.circular(6))),
-        const SizedBox(width: 6),
-        Text('$label ($count)',
-            style: const TextStyle(color: Colors.white70, fontSize: 12)),
-      ],
-    );
-  }
-
-  Map<String, dynamic> _calculateFinancials(
-      Raffle raffle, List<Ticket> tickets) {
-    final sold = tickets.where((t) => t.status == 'sold').length;
-    final reserved = tickets.where((t) => t.status == 'reserved').length;
+  Widget _buildLegend(List<Ticket> tickets) {
     final available = tickets.where((t) => t.status == 'available').length;
+    final reserved = tickets.where((t) => t.status == 'reserved').length;
+    final sold = tickets.where((t) => t.status == 'sold').length;
 
-    return {
-      'collectedAmount': sold * raffle.price,
-      'pendingAmount': reserved * raffle.price,
-      'remainingAmount': available * raffle.price,
-      'totalAmount': raffle.totalTickets * raffle.price,
-      'soldTickets': sold,
-      'reservedTickets': reserved,
-      'availableTickets': available,
-    };
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _legendItem(Colors.green, 'Available ($available)'),
+        _legendItem(Colors.orange, 'Reserved ($reserved)'),
+        _legendItem(Colors.red, 'Sold ($sold)'),
+      ],
+    );
   }
+
+  Widget _statCard(String value, String label) => Column(
+        children: [
+          Text(value,
+              style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.greenAccent)),
+          const SizedBox(height: 4),
+          Text(label, style: const TextStyle(color: Colors.white54)),
+        ],
+      );
+
+  Widget _legendItem(Color color, String label) => Row(
+        children: [
+          Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          const SizedBox(width: 6),
+          Text(label, style: const TextStyle(color: Colors.white)),
+        ],
+      );
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'active':
+        return Colors.green;
+      case 'inactive':
+        return Colors.orange;
+      case 'expired':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  void _confirmDelete(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        backgroundColor: const Color(0xFF1e1e1e),
+        title:
+            const Text('Are you sure?', style: TextStyle(color: Colors.white)),
+        content: const Text('This raffle will be moved to trash.',
+            style: TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Navigator.pop(context);
+              await context.read<RaffleCubit>().deleteCurrentRaffle();
+              Navigator.pop(context); // back to list
+            },
+            icon: const Icon(Icons.delete),
+            label: const Text('Move to Trash'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+extension StringExtension on String {
+  String capitalize() => isEmpty ? this : this[0].toUpperCase() + substring(1);
 }
