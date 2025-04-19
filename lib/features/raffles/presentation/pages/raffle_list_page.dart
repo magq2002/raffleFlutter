@@ -14,14 +14,9 @@ class RaffleListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🔁 Llamar al cargar por primera vez
-    Future.microtask(() {
-      context.read<RaffleBloc>().add(LoadRaffles());
-    });
-
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Raffles'),
+        title: const Text('Mis Rifas'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -50,35 +45,79 @@ class RaffleListPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is RaffleLoaded) {
             if (state.raffles.isEmpty) {
-              return const Center(child: Text('No raffles yet.'));
+              return const Center(child: Text('No hay rifas creadas.'));
             }
 
             return ListView.builder(
+              padding: const EdgeInsets.all(16),
               itemCount: state.raffles.length,
               itemBuilder: (context, index) {
                 final raffle = state.raffles[index];
-                return ListTile(
-                  title: Text(raffle.name),
-                  subtitle: Text('#${raffle.lotteryNumber}'),
-                  trailing: Text(
-                    raffle.status.toUpperCase(),
-                    style: TextStyle(
-                      color: _getStatusColor(raffle.status),
-                      fontWeight: FontWeight.bold,
-                    ),
+                final total = raffle.totalTickets * raffle.price;
+                final sold = raffle.totalTickets ~/ 2;
+                final collected = sold * raffle.price;
+                final percent = total == 0 ? 0.0 : (collected / total);
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  onTap: () async {
-                    // 🔁 Espera al regresar para refrescar lista
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RaffleDetailsPage(raffleId: raffle.id!),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    leading: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.deepPurple,
+                      child: Text(
+                        raffle.name.substring(0, 1).toUpperCase(),
+                        style: const TextStyle(color: Colors.white),
                       ),
-                    );
-                    if (context.mounted) {
-                      context.read<RaffleBloc>().add(LoadRaffles());
-                    }
-                  },
+                    ),
+                    title: Text(
+                      raffle.name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 4),
+                        Text('Lotería #${raffle.lotteryNumber}'),
+                        const SizedBox(height: 6),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(4),
+                          child: LinearProgressIndicator(
+                            value: percent,
+                            minHeight: 6,
+                            backgroundColor: Colors.grey[300],
+                            valueColor: AlwaysStoppedAnimation(
+                                Theme.of(context).colorScheme.primary),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text('${(percent * 100).toStringAsFixed(1)}% vendido',
+                            style: const TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                    trailing: Text(
+                      raffle.status.toUpperCase(),
+                      style: TextStyle(
+                        color: _getStatusColor(raffle.status),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              RaffleDetailsPage(raffleId: raffle.id!),
+                        ),
+                      );
+                    },
+                  ),
                 );
               },
             );
@@ -90,10 +129,10 @@ class RaffleListPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
+        onPressed: () {
           final bloc = context.read<RaffleBloc>();
 
-          await Navigator.push(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => BlocProvider.value(
@@ -102,10 +141,6 @@ class RaffleListPage extends StatelessWidget {
               ),
             ),
           );
-
-          if (context.mounted) {
-            context.read<RaffleBloc>().add(LoadRaffles());
-          }
         },
         child: const Icon(Icons.add),
       ),
