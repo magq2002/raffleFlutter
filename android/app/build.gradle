@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = 'raffle.com.raffle'
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

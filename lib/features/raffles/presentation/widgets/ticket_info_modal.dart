@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/ticket.dart';
+import 'package:raffle/features/raffles/domain/entities/ticket.dart';
+import 'ticket_export_widget.dart';
 
 class TicketInfoModal extends StatelessWidget {
-  final Ticket ticket;
+  final Ticket? ticket;
   final VoidCallback onClose;
   final VoidCallback onEdit;
 
@@ -15,90 +16,58 @@ class TicketInfoModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = _statusColor(ticket.status);
+    if (ticket == null) return const SizedBox.shrink();
 
     return Dialog(
       backgroundColor: const Color(0xFF1e1e1e),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Ticket #${ticket.number}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Título y botón cerrar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Detalles del Ticket',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: onClose,
-                icon: const Icon(Icons.close, color: Colors.white),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(8),
+                IconButton(
+                  onPressed: onClose,
+                  icon: const Icon(Icons.close, color: Colors.white),
+                ),
+              ],
             ),
-            child: Text(
-              ticket.status.toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+            const SizedBox(height: 12),
+            // Widget de exportación (vista previa con QR, número, estado...)
+            TicketExportWidget(ticket: ticket!),
+            const SizedBox(height: 12),
+            // Acciones adicionales: Editar
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: onEdit,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.orange,
+                      side: const BorderSide(color: Colors.orange),
+                    ),
+                    icon: const Icon(Icons.edit),
+                    label: const Text('Editar'),
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 16),
-          if (ticket.status != 'available') ...[
-            _infoRow('Buyer', ticket.buyerName ?? '—'),
-            _infoRow('Contact', ticket.buyerContact ?? '—'),
-            const SizedBox(height: 16),
           ],
-          ElevatedButton.icon(
-            onPressed: onEdit,
-            icon: const Icon(Icons.edit),
-            label: Text(ticket.status == 'available' ? 'Sell Ticket' : 'Edit'),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-          ),
-        ]),
+        ),
       ),
     );
-  }
-
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Text('$label: ',
-              style: const TextStyle(
-                  color: Colors.grey, fontWeight: FontWeight.w500)),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _statusColor(String status) {
-    switch (status) {
-      case 'sold':
-        return Colors.red;
-      case 'reserved':
-        return Colors.orange;
-      default:
-        return Colors.green;
-    }
   }
 }
