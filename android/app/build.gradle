@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "raffle.com.raffle"
+    namespace = 'raffle.com.raffle'
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 

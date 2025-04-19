@@ -1,30 +1,31 @@
-import '../../domain/entities/raffle.dart';
-import '../../domain/entities/ticket.dart';
+import 'package:equatable/equatable.dart';
+import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 
-class RaffleState {
-  final Raffle? raffle;
-  final List<Ticket> tickets;
-  final bool loading;
-  final String? error;
+abstract class RaffleState extends Equatable {
+  const RaffleState();
 
-  RaffleState({
-    this.raffle,
-    this.tickets = const [],
-    this.loading = false,
-    this.error,
-  });
+  @override
+  List<Object?> get props => [];
+}
 
-  RaffleState copyWith({
-    Raffle? raffle,
-    List<Ticket>? tickets,
-    bool? loading,
-    String? error,
-  }) {
-    return RaffleState(
-      raffle: raffle ?? this.raffle,
-      tickets: tickets ?? this.tickets,
-      loading: loading ?? this.loading,
-      error: error,
-    );
-  }
+class RaffleInitial extends RaffleState {}
+
+class RaffleLoading extends RaffleState {}
+
+class RaffleLoaded extends RaffleState {
+  final List<Raffle> raffles;
+
+  const RaffleLoaded({required this.raffles});
+
+  @override
+  List<Object> get props => [raffles];
+}
+
+class RaffleError extends RaffleState {
+  final String message;
+
+  const RaffleError({required this.message});
+
+  @override
+  List<Object> get props => [message];
 }

@@ -2,24 +2,20 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/ticket.dart';
 
 class TicketInfoModal extends StatelessWidget {
-  final Ticket? ticket;
-  final bool visible;
+  final Ticket ticket;
   final VoidCallback onClose;
   final VoidCallback onEdit;
 
   const TicketInfoModal({
     super.key,
     required this.ticket,
-    required this.visible,
     required this.onClose,
     required this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (!visible || ticket == null) return const SizedBox.shrink();
-
-    final bgColor = _statusColor(ticket!.status);
+    final bgColor = _statusColor(ticket.status);
 
     return Dialog(
       backgroundColor: const Color(0xFF1e1e1e),
@@ -31,7 +27,7 @@ class TicketInfoModal extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Ticket #${ticket!.number}',
+                'Ticket #${ticket.number}',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -52,7 +48,7 @@ class TicketInfoModal extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              ticket!.status.toUpperCase(),
+              ticket.status.toUpperCase(),
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
@@ -60,15 +56,15 @@ class TicketInfoModal extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (ticket!.status != 'available') ...[
-            _infoRow('Buyer', ticket!.buyerName ?? '—'),
-            _infoRow('Contact', ticket!.buyerContact ?? '—'),
+          if (ticket.status != 'available') ...[
+            _infoRow('Buyer', ticket.buyerName ?? '—'),
+            _infoRow('Contact', ticket.buyerContact ?? '—'),
             const SizedBox(height: 16),
           ],
           ElevatedButton.icon(
             onPressed: onEdit,
             icon: const Icon(Icons.edit),
-            label: Text(ticket!.status == 'available' ? 'Sell Ticket' : 'Edit'),
+            label: Text(ticket.status == 'available' ? 'Sell Ticket' : 'Edit'),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
           ),
         ]),
