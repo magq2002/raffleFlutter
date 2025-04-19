@@ -1,4 +1,5 @@
 import 'package:raffle/features/raffles/domain/entities/raffle.dart';
+import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 
 class RaffleModel extends Raffle {
   RaffleModel({
@@ -10,6 +11,8 @@ class RaffleModel extends Raffle {
     required String status,
     required DateTime createdAt,
     required DateTime updatedAt,
+    String? imagePath,
+    List<Ticket>? tickets,
   }) : super(
           id: id,
           name: name,
@@ -19,6 +22,8 @@ class RaffleModel extends Raffle {
           status: status,
           createdAt: createdAt,
           updatedAt: updatedAt,
+          imagePath: imagePath,
+          tickets: tickets,
         );
 
   factory RaffleModel.fromMap(Map<String, dynamic> map) {
@@ -31,6 +36,7 @@ class RaffleModel extends Raffle {
       status: map['status'],
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
+      imagePath: map['image_path'],
     );
   }
 
@@ -44,6 +50,7 @@ class RaffleModel extends Raffle {
       'status': status,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'image_path': imagePath,
     };
   }
 
@@ -57,6 +64,8 @@ class RaffleModel extends Raffle {
       status: raffle.status,
       createdAt: raffle.createdAt,
       updatedAt: raffle.updatedAt,
+      imagePath: raffle.imagePath,
+      tickets: raffle.tickets,
     );
   }
 
@@ -70,6 +79,8 @@ class RaffleModel extends Raffle {
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      imagePath: imagePath,
+      tickets: tickets,
     );
   }
 }

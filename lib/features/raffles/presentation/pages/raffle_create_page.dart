@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_bloc.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_event.dart';
 
@@ -17,6 +20,8 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
   final _priceController = TextEditingController();
   final _totalTicketsController = TextEditingController();
 
+  File? _selectedImage;
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -24,6 +29,15 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
     _priceController.dispose();
     _totalTicketsController.dispose();
     super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      setState(() {
+        _selectedImage = File(picked.path);
+      });
+    }
   }
 
   void _submit() {
@@ -36,10 +50,11 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
           lotteryNumber: _lotteryNumberController.text.trim(),
           price: double.parse(_priceController.text.trim()),
           totalTickets: int.parse(_totalTicketsController.text.trim()),
+          imagePath: _selectedImage?.path,
         ),
       );
 
-      Navigator.pop(context); // volver a la lista luego de crear
+      Navigator.pop(context);
     }
   }
 
@@ -87,6 +102,17 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16),
+              TextButton.icon(
+                onPressed: _pickImage,
+                icon: const Icon(Icons.image),
+                label: const Text('Select Image (optional)'),
+              ),
+              if (_selectedImage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Image.file(_selectedImage!, height: 150),
+                ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: _submit,

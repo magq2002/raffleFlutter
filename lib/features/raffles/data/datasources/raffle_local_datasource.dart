@@ -1,7 +1,9 @@
 import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+
 import '../models/raffle_model.dart';
 
 class RaffleLocalDatasource {
@@ -38,7 +40,8 @@ class RaffleLocalDatasource {
         total_tickets INTEGER NOT NULL,
         status TEXT NOT NULL,
         created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+        updated_at TEXT NOT NULL,
+        image_path TEXT
       )
     ''');
 
@@ -60,11 +63,12 @@ class RaffleLocalDatasource {
     required String lotteryNumber,
     required double price,
     required int totalTickets,
+    String? imagePath,
   }) async {
     final db = await database;
     final now = DateTime.now().toIso8601String();
 
-    int raffleId = await db.insert('raffles', {
+    return await db.insert('raffles', {
       'name': name,
       'lottery_number': lotteryNumber,
       'price': price,
@@ -72,18 +76,8 @@ class RaffleLocalDatasource {
       'status': 'active',
       'created_at': now,
       'updated_at': now,
+      'image_path': imagePath,
     });
-
-    return raffleId;
-  }
-
-  Future<int> insertRaffleModel(RaffleModel model) async {
-    return await insertRaffle(
-      name: model.name,
-      lotteryNumber: model.lotteryNumber,
-      price: model.price,
-      totalTickets: model.totalTickets,
-    );
   }
 
   Future<List<Map<String, dynamic>>> getAllRaffles() async {
@@ -97,13 +91,8 @@ class RaffleLocalDatasource {
         await db.query('raffles', where: 'id = ?', whereArgs: [id]);
     if (raffleList.isEmpty) return null;
 
-    final tickets = await db.query(
-      'tickets',
-      where: 'raffle_id = ?',
-      whereArgs: [id],
-      orderBy: 'number ASC',
-    );
-
+    final tickets = await db.query('tickets',
+        where: 'raffle_id = ?', whereArgs: [id], orderBy: 'number ASC');
     return {
       'raffle': raffleList.first,
       'tickets': tickets,
@@ -174,5 +163,15 @@ class RaffleLocalDatasource {
       'buyer_name': buyerName,
       'buyer_contact': buyerContact,
     });
+  }
+
+  Future<int> insertRaffleModel(RaffleModel model) async {
+    return await insertRaffle(
+      name: model.name,
+      lotteryNumber: model.lotteryNumber,
+      price: model.price,
+      totalTickets: model.totalTickets,
+      imagePath: model.imagePath,
+    );
   }
 }

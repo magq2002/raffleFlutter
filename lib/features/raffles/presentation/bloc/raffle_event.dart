@@ -1,22 +1,22 @@
 import 'package:equatable/equatable.dart';
-
 import '../../domain/entities/ticket.dart';
 
 abstract class RaffleEvent extends Equatable {
   const RaffleEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadRaffles extends RaffleEvent {}
 
 class DeleteRaffle extends RaffleEvent {
   final int raffleId;
+
   const DeleteRaffle(this.raffleId);
 
   @override
-  List<Object> get props => [raffleId];
+  List<Object?> get props => [raffleId];
 }
 
 class CreateRaffle extends RaffleEvent {
@@ -24,16 +24,19 @@ class CreateRaffle extends RaffleEvent {
   final String lotteryNumber;
   final double price;
   final int totalTickets;
+  final String? imagePath;
 
   const CreateRaffle({
     required this.name,
     required this.lotteryNumber,
     required this.price,
     required this.totalTickets,
+    this.imagePath,
   });
 
   @override
-  List<Object> get props => [name, lotteryNumber, price, totalTickets];
+  List<Object?> get props =>
+      [name, lotteryNumber, price, totalTickets, imagePath];
 }
 
 class UpdateTicketEvent extends RaffleEvent {
@@ -42,7 +45,7 @@ class UpdateTicketEvent extends RaffleEvent {
   const UpdateTicketEvent(this.ticket);
 
   @override
-  List<Object> get props => [ticket];
+  List<Object?> get props => [ticket];
 }
 
 class UpdateRaffleStatusEvent extends RaffleEvent {
@@ -55,5 +58,5 @@ class UpdateRaffleStatusEvent extends RaffleEvent {
   });
 
   @override
-  List<Object> get props => [raffleId, newStatus];
+  List<Object?> get props => [raffleId, newStatus];
 }

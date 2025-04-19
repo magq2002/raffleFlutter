@@ -43,12 +43,16 @@ class RaffleRepositoryImpl implements RaffleRepository {
 
   @override
   Future<List<Raffle>> getAllRaffles() async {
-    final rawRows = await raffleLocalDatasource.getAllRaffles();
+    final maps = await raffleLocalDatasource.getAllRaffles();
+    List<Raffle> raffles = [];
 
-    return rawRows
-        .map((row) =>
-            RaffleModel.fromMap(Map<String, dynamic>.from(row)).toEntity())
-        .toList();
+    for (final map in maps) {
+      final raffle = RaffleModel.fromMap(map).toEntity();
+      final tickets = await ticketDao.getTicketsByRaffleId(raffle.id!);
+      raffles.add(raffle.copyWith(tickets: tickets));
+    }
+
+    return raffles;
   }
 
   @override

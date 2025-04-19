@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 import 'package:raffle/features/raffles/domain/repositories/raffle_repository.dart';
+
 import 'raffle_event.dart';
 import 'raffle_state.dart';
 
@@ -13,6 +14,13 @@ class RaffleBloc extends Bloc<RaffleEvent, RaffleState> {
       emit(RaffleLoading());
       try {
         final raffles = await repository.getAllRaffles();
+
+        // 👇 Añade este print para ver cuántas rifas y tickets hay
+        for (var raffle in raffles) {
+          print(
+              '📦 Rifa: ${raffle.name} - Tickets: ${raffle.tickets?.length ?? 0}');
+        }
+
         emit(RaffleLoaded(raffles: raffles));
       } catch (e) {
         emit(RaffleError(message: e.toString()));
@@ -30,13 +38,13 @@ class RaffleBloc extends Bloc<RaffleEvent, RaffleState> {
           status: 'active',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
+          imagePath: event.imagePath, // ⬅️ Aquí se incluye la imagen
         );
 
         final tickets = List.generate(event.totalTickets, (i) {
           return Ticket(
             id: null,
-            raffleId:
-                -1, // Lo asignaremos luego en el repository con el ID real
+            raffleId: 0, // se asignará luego en el repo
             number: i + 1,
             status: 'available',
           );

@@ -1,6 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_bloc.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_event.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_state.dart';
@@ -9,8 +10,33 @@ import 'package:raffle/features/raffles/presentation/pages/raffle_details_page.d
 
 import '../../data/datasources/raffle_local_datasource.dart';
 
-class RaffleListPage extends StatelessWidget {
+class RaffleListPage extends StatefulWidget {
   const RaffleListPage({super.key});
+
+  @override
+  State<RaffleListPage> createState() => _RaffleListPageState();
+}
+
+class _RaffleListPageState extends State<RaffleListPage> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      context.read<RaffleBloc>().add(LoadRaffles());
+    });
+  }
+
+  Future<void> _navigateToDetails(int raffleId) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RaffleDetailsPage(raffleId: raffleId),
+      ),
+    );
+    if (mounted) {
+      context.read<RaffleBloc>().add(LoadRaffles());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +79,13 @@ class RaffleListPage extends StatelessWidget {
               itemCount: state.raffles.length,
               itemBuilder: (context, index) {
                 final raffle = state.raffles[index];
-                final total = raffle.totalTickets * raffle.price;
-                final sold = raffle.totalTickets ~/ 2;
-                final collected = sold * raffle.price;
-                final percent = total == 0 ? 0.0 : (collected / total);
+                final tickets = raffle.tickets ?? [];
+                final soldCount = tickets
+                    .where((t) => t.status == 'sold' || t.status == 'reserved')
+                    .length;
+                final percent = raffle.totalTickets == 0
+                    ? 0.0
+                    : soldCount / raffle.totalTickets;
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -67,14 +96,26 @@ class RaffleListPage extends StatelessWidget {
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 16, vertical: 12),
-                    leading: CircleAvatar(
-                      radius: 22,
-                      backgroundColor: Colors.deepPurple,
-                      child: Text(
-                        raffle.name.substring(0, 1).toUpperCase(),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ),
+                    leading:
+                        raffle.imagePath != null && raffle.imagePath!.isNotEmpty
+                            ? ClipOval(
+                                child: Image.file(
+                                  File(raffle.imagePath!),
+                                  width: 44,
+                                  height: 44,
+                                  fit: BoxFit.cover,
+                                  cacheWidth: 100,
+                                  cacheHeight: 100,
+                                ),
+                              )
+                            : CircleAvatar(
+                                radius: 22,
+                                backgroundColor: Colors.deepPurple,
+                                child: Text(
+                                  raffle.name.substring(0, 1).toUpperCase(),
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                              ),
                     title: Text(
                       raffle.name,
                       style: const TextStyle(
@@ -108,15 +149,7 @@ class RaffleListPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              RaffleDetailsPage(raffleId: raffle.id!),
-                        ),
-                      );
-                    },
+                    onTap: () => _navigateToDetails(raffle.id!),
                   ),
                 );
               },
@@ -129,10 +162,10 @@ class RaffleListPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           final bloc = context.read<RaffleBloc>();
 
-          Navigator.push(
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => BlocProvider.value(
@@ -141,6 +174,10 @@ class RaffleListPage extends StatelessWidget {
               ),
             ),
           );
+
+          if (mounted) {
+            context.read<RaffleBloc>().add(LoadRaffles());
+          }
         },
         child: const Icon(Icons.add),
       ),
