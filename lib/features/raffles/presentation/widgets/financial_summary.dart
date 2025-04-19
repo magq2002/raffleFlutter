@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/ticket.dart';
 import '../../domain/entities/raffle.dart';
+import '../../domain/entities/ticket.dart';
 
 class FinancialSummary extends StatelessWidget {
   final Raffle raffle;
@@ -23,7 +23,10 @@ class FinancialSummary extends StatelessWidget {
     final remaining = available * raffle.price;
     final total = raffle.totalTickets * raffle.price;
 
-    double percent(double amount) => total == 0 ? 0 : (amount / total * 100);
+    final totalTickets = raffle.totalTickets.toDouble();
+    final percentSold = sold / totalTickets;
+    final percentReserved = reserved / totalTickets;
+    final percentAvailable = available / totalTickets;
 
     return Container(
       decoration: BoxDecoration(
@@ -37,38 +40,33 @@ class FinancialSummary extends StatelessWidget {
           const Text(
             'Financial Summary',
             style: TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _summaryBox('Collected', collected, percent(collected),
-                  Colors.greenAccent),
               _summaryBox(
-                  'Reserved', pending, percent(pending), Colors.orangeAccent),
+                  'Collected', collected, percentSold, Colors.greenAccent),
               _summaryBox(
-                  'Remaining', remaining, percent(remaining), Colors.grey),
+                  'Reserved', pending, percentReserved, Colors.orangeAccent),
+              _summaryBox(
+                  'Remaining', remaining, percentAvailable, Colors.grey),
             ],
           ),
           const SizedBox(height: 16),
-          Stack(
-            children: [
-              Container(
-                height: 8,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey[800],
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              Row(
-                children: [
-                  _progressSegment(percent(collected), Colors.greenAccent),
-                  _progressSegment(percent(pending), Colors.orangeAccent),
-                ],
-              ),
-            ],
+          SizedBox(
+            height: 8,
+            child: Row(
+              children: [
+                _progressSegment(percentSold, Colors.greenAccent),
+                _progressSegment(percentReserved, Colors.orangeAccent),
+                _progressSegment(percentAvailable, Colors.grey),
+              ],
+            ),
           ),
           const SizedBox(height: 6),
           Text('Total: \$${total.toStringAsFixed(2)}',
@@ -84,20 +82,25 @@ class FinancialSummary extends StatelessWidget {
       children: [
         Text('\$${value.toStringAsFixed(2)}',
             style: TextStyle(
-                fontWeight: FontWeight.bold, fontSize: 16, color: color)),
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+              color: color,
+            )),
         const SizedBox(height: 4),
         Text(label, style: const TextStyle(color: Colors.white70)),
-        Text('${percent.toStringAsFixed(1)}%',
+        Text('${(percent * 100).toStringAsFixed(1)}%',
             style: const TextStyle(fontSize: 12, color: Colors.white38)),
       ],
     );
   }
 
   Widget _progressSegment(double percent, Color color) {
+    if (percent <= 0) return const SizedBox.shrink();
+
     return Expanded(
-      flex: (percent * 100).round(),
+      flex: (percent * 1000)
+          .round(), // Multiplicamos por 1000 para mejor precisión
       child: Container(
-        height: 8,
         decoration: BoxDecoration(
           color: color,
           borderRadius: BorderRadius.circular(4),
