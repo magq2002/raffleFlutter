@@ -1,4 +1,4 @@
-package raffle.com.raffle
+package io.bemytech.raffle
 
 import io.flutter.embedding.android.FlutterActivity
 
