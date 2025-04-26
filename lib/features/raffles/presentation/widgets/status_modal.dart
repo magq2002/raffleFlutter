@@ -166,8 +166,7 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
                       ],
                     ),
                   ),
-                  
-                  Divider(height: 1, color: Colors.white.withOpacity(0.05)),
+                  Divider(height: 1, color: Colors.white.withAlpha(13)),
                   
                   
                   Padding(
