@@ -55,7 +55,7 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
         ),
       },
       {
-        'value': 'inactive',
+        'value': 'inactiva',
         'icon': Icons.pause_circle_outline,
         'gradient': const LinearGradient(
           colors: [Color(0xFFFF9800), Color(0xFFE65100)],
@@ -313,7 +313,7 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
     switch (status) {
       case 'active':
         return 'Activa';
-      case 'inactive':
+      case 'inactiva':
         return 'Inactiva';
       case 'expired':
         return 'Expirada';
@@ -339,7 +339,7 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
     switch (status) {
       case 'active':
         return Colors.green;
-      case 'inactive':
+      case 'inactiva':
         return Colors.orange;
       case 'expired':
         return Colors.red;
