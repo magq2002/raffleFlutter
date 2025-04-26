@@ -1,0 +1,2 @@
+/Volumes/Dev/projects/tech-synergy/sm_tooljet/raffleFlutter/android/app/.cxx/RelWithDebInfo/3c6w371q/x86/CMakeFiles/edit_cache.dir
+/Volumes/Dev/projects/tech-synergy/sm_tooljet/raffleFlutter/android/app/.cxx/RelWithDebInfo/3c6w371q/x86/CMakeFiles/rebuild_cache.dir
