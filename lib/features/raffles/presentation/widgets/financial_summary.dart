@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart'; // Para formateo de números
 import '../../domain/entities/raffle.dart';
 import '../../domain/entities/ticket.dart';
 
@@ -11,6 +12,18 @@ class FinancialSummary extends StatelessWidget {
     required this.raffle,
     required this.tickets,
   });
+
+  // Formateadores para mostrar los números con mejor formato
+  NumberFormat get currencyFormat => NumberFormat.currency(
+        symbol: '\$',
+        decimalDigits: 2,
+        locale: 'es',
+      );
+  
+  NumberFormat get percentFormat => NumberFormat.decimalPercentPattern(
+        decimalDigits: 1,
+        locale: 'es',
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -30,48 +43,87 @@ class FinancialSummary extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1e1e1e),
-        borderRadius: BorderRadius.circular(12),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF2C2C2E), Color(0xFF1C1C1E)],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(51),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Financial Summary',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.bar_chart_rounded,
+                color: Colors.white70,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Resumen Financiero',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              const Spacer(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF383838),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  '${raffle.totalTickets} tickets',
+                  style: const TextStyle(
+                    color: Colors.white60,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _summaryBox(
-                  'Collected', collected, percentSold, Colors.greenAccent),
-              _summaryBox(
-                  'Reserved', pending, percentReserved, Colors.orangeAccent),
-              _summaryBox(
-                  'Remaining', remaining, percentAvailable, Colors.grey),
+              _summaryBox('Cobrado', collected, percentSold, const Color(0xFF00E676)),
+              _summaryBox('Reservado', pending, percentReserved, const Color(0xFFFFD54F)),
+              _summaryBox('Pendiente', remaining, percentAvailable, const Color(0xFF9E9E9E)),
             ],
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 8,
-            child: Row(
-              children: [
-                _progressSegment(percentSold, Colors.greenAccent),
-                _progressSegment(percentReserved, Colors.orangeAccent),
-                _progressSegment(percentAvailable, Colors.grey),
-              ],
-            ),
+          const SizedBox(height: 18),
+          _buildProgressBar(percentSold, percentReserved, percentAvailable),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Progreso: ${percentFormat.format(percentSold + percentReserved)}',
+                style: const TextStyle(color: Colors.white60, fontSize: 12),
+              ),
+              Text(
+                'Total: ${currencyFormat.format(total)}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
-          Text('Total: \$${total.toStringAsFixed(2)}',
-              style: const TextStyle(color: Colors.white70),
-              textAlign: TextAlign.right),
         ],
       ),
     );
@@ -80,17 +132,74 @@ class FinancialSummary extends StatelessWidget {
   Widget _summaryBox(String label, double value, double percent, Color color) {
     return Column(
       children: [
-        Text('\$${value.toStringAsFixed(2)}',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: color.withAlpha(26),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Icon(
+              _getIconForLabel(label),
               color: color,
-            )),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(color: Colors.white70)),
-        Text('${(percent * 100).toStringAsFixed(1)}%',
-            style: const TextStyle(fontSize: 12, color: Colors.white38)),
+              size: 24,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          currencyFormat.format(value),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: color,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(color: Colors.white70),
+        ),
+        Text(
+          percentFormat.format(percent),
+          style: const TextStyle(fontSize: 12, color: Colors.white38),
+        ),
       ],
+    );
+  }
+
+  IconData _getIconForLabel(String label) {
+    switch (label) {
+      case 'Cobrado':
+        return Icons.check_circle_outline;
+      case 'Reservado':
+        return Icons.bookmark;
+      case 'Pendiente':
+        return Icons.access_time;
+      default:
+        return Icons.question_mark;
+    }
+  }
+
+  Widget _buildProgressBar(
+    double percentSold,
+    double percentReserved,
+    double percentAvailable,
+  ) {
+    return Container(
+      height: 10,
+      decoration: BoxDecoration(
+        color: Colors.black.withAlpha(51),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        children: [
+          _progressSegment(percentSold, const Color(0xFF00E676)),
+          _progressSegment(percentReserved, const Color(0xFFFFD54F)),
+          _progressSegment(percentAvailable, const Color(0xFF9E9E9E).withAlpha(77)),
+        ],
+      ),
     );
   }
 
@@ -98,12 +207,11 @@ class FinancialSummary extends StatelessWidget {
     if (percent <= 0) return const SizedBox.shrink();
 
     return Expanded(
-      flex: (percent * 1000)
-          .round(), // Multiplicamos por 1000 para mejor precisión
+      flex: (percent * 1000).round(), // Multiplicamos por 1000 para mejor precisión
       child: Container(
         decoration: BoxDecoration(
           color: color,
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(6),
         ),
       ),
     );
