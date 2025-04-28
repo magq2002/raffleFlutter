@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../features/raffles/presentation/pages/raffle_page.dart';
-import '../features/raffles/presentation/pages/giveaway_page.dart';
+import 'package:raffle/features/giveaways/presentation/pages/giveaway_list_page.dart';
+import '../features/raffles/presentation/pages/raffle_list_page.dart';
 import '../features/raffles/presentation/pages/trash_page.dart';
 import '../features/raffles/presentation/pages/history_page.dart';
 import '../features/raffles/presentation/pages/settings_page.dart';
@@ -16,8 +16,8 @@ class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    RafflePage(),
-    GiveawayPage(),
+    RaffleListPage(),
+    GiveawaysListPage(),
     TrashPage(),
     HistoryPage(),
     SettingsPage(),
