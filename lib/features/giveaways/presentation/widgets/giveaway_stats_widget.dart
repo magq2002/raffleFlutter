@@ -20,9 +20,9 @@ class GiveawayStatsWidget extends StatelessWidget {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildStatCard('Participants', total),
-              _buildStatCard('Preselected', preselected),
-              _buildStatCard('Winners', winners),
+              _buildStatCard('Participantes', total),
+              _buildStatCard('Preseleccionados', preselected),
+              _buildStatCard('Ganadores', winners),
             ],
           );
         }

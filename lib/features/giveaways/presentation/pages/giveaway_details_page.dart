@@ -169,18 +169,40 @@ class GiveawayDetailsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Agregar Participante'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text(
+          '👤 Agregar Participante',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             TextField(
               controller: nameController,
-              decoration: const InputDecoration(labelText: 'Nombre'),
+              decoration: InputDecoration(
+                labelText: 'Nombre',
+                prefixIcon: const Icon(Icons.person),
+                filled: true,
+                fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             TextField(
               controller: contactController,
-              decoration: const InputDecoration(labelText: 'Contacto'),
+              decoration: InputDecoration(
+                labelText: 'Contacto',
+                prefixIcon: const Icon(Icons.phone),
+                filled: true,
+                fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
             ),
           ],
         ),
@@ -189,16 +211,21 @@ class GiveawayDetailsPage extends StatelessWidget {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: () {
               final name = nameController.text.trim();
               final contact = contactController.text.trim();
 
               if (name.isEmpty || contact.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('⚠️ Por favor completa todos los campos'),
-                    backgroundColor: Colors.redAccent,
+                  SnackBar(
+                    content:
+                        const Text('⚠️ Por favor completa todos los campos'),
+                    backgroundColor: Colors.red.shade400,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 );
               } else {
@@ -211,14 +238,26 @@ class GiveawayDetailsPage extends StatelessWidget {
                     );
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('✅ Participante agregado exitosamente'),
+                  SnackBar(
+                    content: const Text('✅ Participante agregado exitosamente'),
                     backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
                 );
               }
             },
-            child: const Text('Agregar'),
+            icon: const Icon(Icons.check),
+            label: const Text('Agregar'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.greenAccent.shade400,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
           ),
         ],
       ),

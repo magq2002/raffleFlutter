@@ -53,27 +53,10 @@ class _MainLayoutState extends State<MainLayout> {
           BottomNavigationBarItem(
               icon: Icon(Icons.card_giftcard), label: "Giveaways"),
           BottomNavigationBarItem(icon: Icon(Icons.delete), label: "Trash"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: "Settings"),
+          //BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
+          //BottomNavigationBarItem(
+          //icon: Icon(Icons.settings), label: "Settings"),
         ],
-      ),
-      drawer: Drawer(
-        backgroundColor: Colors.black87,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: const [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.green),
-              child: Text('Menu',
-                  style: TextStyle(color: Colors.white, fontSize: 24)),
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About'),
-            ),
-          ],
-        ),
       ),
     );
   }

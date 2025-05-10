@@ -7,6 +7,8 @@ class CreateGiveawayButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
+      foregroundColor: Colors.black,
+      backgroundColor: Colors.greenAccent,
       onPressed: () {
         Navigator.push(
           context,
@@ -14,7 +16,7 @@ class CreateGiveawayButton extends StatelessWidget {
         );
       },
       icon: const Icon(Icons.add),
-      label: const Text('New Giveaway'),
+      label: const Text('Nuevo sorteo'),
     );
   }
 }

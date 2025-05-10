@@ -136,6 +136,8 @@ class _RaffleListPageState extends State<RaffleListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.greenAccent,
         onPressed: () async {
           final bloc = context.read<RaffleBloc>();
 

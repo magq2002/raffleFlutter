@@ -121,24 +121,31 @@ class ParticipantLocalDatasource {
   Future<Participant?> drawWinner(int giveawayId) async {
     final db = await database;
 
-    final allParticipants = await db.query(
+    // Intentar con preseleccionados que no han ganado
+    List<Map<String, dynamic>> participantsList = await db.query(
       'participants',
       where: 'giveawayId = ? AND isPreselected = 1 AND isWinner = 0',
       whereArgs: [giveawayId],
     );
 
-    if (allParticipants.isEmpty) {
-      return null;
+    // Si no hay preseleccionados, usar todos los que no han ganado
+    if (participantsList.isEmpty) {
+      participantsList = await db.query(
+        'participants',
+        where: 'giveawayId = ? AND isWinner = 0',
+        whereArgs: [giveawayId],
+      );
     }
 
-    // Obtener participantes que aún no ganaron
+    if (participantsList.isEmpty) return null;
+
     final participants =
-        allParticipants.map((p) => ParticipantModel.fromMap(p)).toList();
+        participantsList.map((p) => ParticipantModel.fromMap(p)).toList();
     participants.shuffle();
 
     final winner = participants.first;
 
-    // Consultar cuantos ganadores ya existen
+    // Ver cuántos ganadores ya hay
     final existingWinners = await db.query(
       'participants',
       where: 'giveawayId = ? AND isWinner = 1',
@@ -156,12 +163,11 @@ class ParticipantLocalDatasource {
       award = 'Reconocimiento';
     }
 
-    // Actualizar el participante como ganador y asignar premio
     await db.update(
       'participants',
       {
         'isWinner': 1,
-        'award': award, // Nuevo campo award
+        'award': award,
         'updatedAt': DateTime.now().toIso8601String(),
       },
       where: 'id = ?',

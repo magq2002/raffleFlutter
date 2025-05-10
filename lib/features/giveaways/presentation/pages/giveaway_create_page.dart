@@ -24,16 +24,14 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
 
   void _submit() {
     if (_formKey.currentState?.validate() ?? false) {
-      final bloc = context.read<GiveawayBloc>();
+      context.read<GiveawayBloc>().add(CreateGiveawayEvent(
+            name: _nameController.text.trim(),
+            description: _descriptionController.text.trim(),
+            drawDate: _drawDate!,
+            status: 'pending',
+          ));
 
-      bloc.add(CreateGiveawayEvent(
-        name: _nameController.text.trim(),
-        description: _descriptionController.text.trim(),
-        drawDate: _drawDate!,
-        status: 'pending',
-      ));
-
-      Navigator.pop(context); // Volver a la lista
+      Navigator.pop(context);
     }
   }
 
@@ -41,45 +39,83 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Giveaway'),
+        title: const Text('🎁 Crear Sorteo'),
+        centerTitle: true,
+        elevation: 2,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              _buildTextField(
-                controller: _nameController,
-                label: 'Giveaway Name',
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
+      body: Center(
+        child: Card(
+          margin: const EdgeInsets.all(16),
+          elevation: 12,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  const Text(
+                    'Nuevo Giveaway',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  _buildTextField(
+                    controller: _nameController,
+                    label: 'Nombre del Sorteo',
+                    icon: Icons.card_giftcard,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Campo obligatorio'
+                        : null,
+                  ),
+                  _buildTextField(
+                    controller: _descriptionController,
+                    label: 'Descripción',
+                    icon: Icons.description,
+                    validator: (value) => value == null || value.isEmpty
+                        ? 'Campo obligatorio'
+                        : null,
+                    maxLines: 3,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text('Fecha del sorteo',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: _pickDate,
+                    icon: const Icon(Icons.date_range),
+                    label: Text(_drawDate == null
+                        ? 'Seleccionar fecha'
+                        : '${_drawDate!.toLocal()}'.split(' ')[0]),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.greenAccent,
+                      foregroundColor: Colors.black87,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  ElevatedButton.icon(
+                    onPressed: _submit,
+                    icon: const Icon(Icons.check),
+                    label: const Text('Crear Sorteo'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
+                ],
               ),
-              _buildTextField(
-                controller: _descriptionController,
-                label: 'Description',
-                validator: (value) =>
-                    value == null || value.isEmpty ? 'Required' : null,
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              const Text('Draw Date',
-                  style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: _pickDate,
-                icon: const Icon(Icons.date_range),
-                label: Text(_drawDate == null
-                    ? 'Pick a date'
-                    : '${_drawDate!.toLocal()}'.split(' ')[0]),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _submit,
-                icon: const Icon(Icons.add),
-                label: const Text('Create Giveaway'),
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -89,6 +125,7 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
+    required IconData icon,
     String? Function(String?)? validator,
     int maxLines = 1,
   }) {
@@ -96,9 +133,17 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: TextFormField(
         controller: controller,
-        decoration: InputDecoration(labelText: label),
         validator: validator,
         maxLines: maxLines,
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon),
+          filled: true,
+          fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none),
+        ),
       ),
     );
   }
@@ -111,7 +156,6 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
       firstDate: now,
       lastDate: DateTime(now.year + 5),
     );
-
     if (picked != null) {
       setState(() {
         _drawDate = picked;

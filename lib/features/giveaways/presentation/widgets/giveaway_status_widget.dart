@@ -10,61 +10,72 @@ class GiveawayStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Theme.of(context).cardColor,
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Status',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Row(
+    return BlocBuilder<GiveawayBloc, GiveawayState>(
+      builder: (context, state) {
+        final updatedGiveaway = (state is GiveawayLoaded)
+            ? state.giveaways.firstWhere(
+                (g) => g.id == giveaway.id,
+                orElse: () => giveaway,
+              )
+            : giveaway;
+
+        return Card(
+          color: Theme.of(context).cardColor,
+          margin: const EdgeInsets.symmetric(vertical: 12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Text(
-                    giveaway.status.toUpperCase(),
-                    style: TextStyle(
-                      color: _getStatusColor(giveaway.status),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
+                const Text(
+                  'Estado',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
-                PopupMenuButton<String>(
-                  onSelected: (value) {
-                    context.read<GiveawayBloc>().add(
-                          UpdateGiveawayStatusEvent(
-                            giveawayId: giveaway.id!,
-                            newStatus: value,
-                          ),
-                        );
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem(
-                      value: 'pending',
-                      child: Text('Pending'),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        updatedGiveaway.status.toUpperCase(),
+                        style: TextStyle(
+                          color: _getStatusColor(updatedGiveaway.status),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
-                    const PopupMenuItem(
-                      value: 'completed',
-                      child: Text('Completed'),
-                    ),
-                    const PopupMenuItem(
-                      value: 'cancelled',
-                      child: Text('Cancelled'),
+                    PopupMenuButton<String>(
+                      onSelected: (value) {
+                        context.read<GiveawayBloc>().add(
+                              UpdateGiveawayStatusEvent(
+                                giveawayId: giveaway.id!,
+                                newStatus: value,
+                              ),
+                            );
+                      },
+                      itemBuilder: (context) => [
+                        const PopupMenuItem(
+                          value: 'pending',
+                          child: Text('Pendiente'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'completed',
+                          child: Text('Completado'),
+                        ),
+                        const PopupMenuItem(
+                          value: 'cancelled',
+                          child: Text('Cancelado'),
+                        ),
+                      ],
+                      child: const Icon(Icons.more_vert),
                     ),
                   ],
-                  child: const Icon(Icons.more_vert),
                 ),
               ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 

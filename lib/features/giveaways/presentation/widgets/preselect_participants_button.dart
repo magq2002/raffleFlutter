@@ -44,7 +44,7 @@ class PreselectParticipantsButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: () => _showPreselectDialog(context),
       icon: const Icon(Icons.how_to_reg),
-      label: const Text('Preselect Participants'),
+      label: const Text('Preseleccionar Participantes'),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.greenAccent,
         foregroundColor: Colors.black,
