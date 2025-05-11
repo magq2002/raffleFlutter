@@ -151,8 +151,8 @@ class _RaffleListPageState extends State<RaffleListPage> {
                                     value: percent,
                                     minHeight: 6,
                                     backgroundColor: Colors.grey[300],
-                                    valueColor: AlwaysStoppedAnimation(
-                                        Theme.of(context).colorScheme.primary),
+                                    valueColor: const AlwaysStoppedAnimation(
+                                        Color(0xFF00C853)),
                                   ),
                                 ),
                                 const SizedBox(height: 4),
