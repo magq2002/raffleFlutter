@@ -69,8 +69,9 @@ class GiveawayDetailsPage extends StatelessWidget {
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300, width: 1),
-                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.grey.shade200, width: 0.5),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade50.withOpacity(0.05),
                   ),
                   child: ParticipantListWidget(giveawayId: giveaway.id!),
                 ),
