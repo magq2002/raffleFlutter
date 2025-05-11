@@ -36,7 +36,7 @@ class GiveawayStatusWidget extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        _translateStatus(updatedGiveaway.status),
+                        updatedGiveaway.status.toUpperCase(),
                         style: TextStyle(
                           color: _getStatusColor(updatedGiveaway.status),
                           fontWeight: FontWeight.bold,
@@ -88,18 +88,6 @@ class GiveawayStatusWidget extends StatelessWidget {
       case 'pending':
       default:
         return Colors.orange;
-    }
-  }
-
-  String _translateStatus(String status) {
-    switch (status.toLowerCase()) {
-      case 'completed':
-        return 'Completado';
-      case 'cancelled':
-        return 'Cancelado';
-      case 'pending':
-      default:
-        return 'Pendiente';
     }
   }
 }

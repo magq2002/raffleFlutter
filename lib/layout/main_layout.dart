@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:raffle/features/giveaways/presentation/pages/giveaway_list_page.dart';
-import '../core/theme/app_colors.dart';
 import '../features/raffles/presentation/pages/raffle_list_page.dart';
 import '../features/raffles/presentation/pages/trash_page.dart';
 import '../features/raffles/presentation/pages/history_page.dart';
@@ -25,9 +24,9 @@ class _MainLayoutState extends State<MainLayout> {
   ];
 
   final List<String> _titles = [
-    'Rifas',
-    'Sorteos',
-    'Papelera',
+    'Raffles',
+    'Giveaways',
+    'Trash',
     'History',
     'Settings',
   ];
@@ -44,16 +43,16 @@ class _MainLayoutState extends State<MainLayout> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: Colors.black,
-        selectedItemColor: AppColors.primary,
+        selectedItemColor: Colors.greenAccent,
         unselectedItemColor: Colors.grey,
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard), label: "Rifas"),
+              icon: Icon(Icons.card_giftcard), label: "Raffles"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard), label: "Sorteos"),
-          BottomNavigationBarItem(icon: Icon(Icons.delete), label: "Papelera"),
+              icon: Icon(Icons.card_giftcard), label: "Giveaways"),
+          BottomNavigationBarItem(icon: Icon(Icons.delete), label: "Trash"),
           //BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
           //BottomNavigationBarItem(
           //icon: Icon(Icons.settings), label: "Settings"),

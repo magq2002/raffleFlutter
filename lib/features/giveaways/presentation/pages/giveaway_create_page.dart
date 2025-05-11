@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../bloc/giveaway_bloc.dart';
 
 class GiveawayCreatePage extends StatefulWidget {
@@ -92,7 +91,7 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
                         ? 'Seleccionar fecha'
                         : '${_drawDate!.toLocal()}'.split(' ')[0]),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
+                      backgroundColor: Colors.greenAccent,
                       foregroundColor: Colors.black87,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 12),
