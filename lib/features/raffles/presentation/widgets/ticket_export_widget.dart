@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/ticket.dart';
 
 class TicketExportWidget extends StatefulWidget {
@@ -78,7 +79,6 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: Colors.white24),
             ),
-            constraints: const BoxConstraints(maxWidth: 500),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -92,7 +92,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                     ),
                   ),
                 ),
-                const Divider(color: Colors.white24, height: 24),
+                const Divider(color: Colors.white24, height: 16),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -104,19 +104,19 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                           Text(
                             ticket.buyerName ?? '—',
                             style: const TextStyle(
-                              color: Colors.greenAccent,
+                              color: AppColors.primary,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 2),
                           Text(
                             'Lotería #${ticket.raffleId}',
                             style: const TextStyle(color: Colors.white54),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           Text(
-                            '#${ticket.number}',
+                            '#${ticket.number} ',
                             style: const TextStyle(
                               color: Colors.tealAccent,
                               fontSize: 42,
@@ -139,10 +139,10 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           const Text('Fecha del sorteo: 21/3/2025',
                               style: TextStyle(color: Colors.white54)),
-                          const Text('Precio: \$10.00',
+                          const Text('Precio: \$10.00 ',
                               style: TextStyle(color: Colors.white54)),
                         ],
                       ),
@@ -160,11 +160,11 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           Text('Nombre: ${ticket.buyerName ?? '—'}',
                               style: const TextStyle(color: Colors.white)),
                           Text('Contacto: ${ticket.buyerContact ?? '—'}',
-                              style: const TextStyle(color: Colors.white)),
+                              style: const TextStyle(color: Colors.white) ),
                           const SizedBox(height: 16),
                           Center(
                             child: QrImageView(
@@ -180,12 +180,12 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 const Center(
                   child: Text(
                     '¡GRACIAS POR PARTICIPAR!',
                     style: TextStyle(
-                      color: Colors.greenAccent,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -205,7 +205,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                   label: const Text('WhatsApp'),
                 ),
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _exportTicket(share: false),

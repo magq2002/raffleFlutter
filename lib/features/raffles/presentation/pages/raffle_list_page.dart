@@ -8,7 +8,7 @@ import 'package:raffle/features/raffles/presentation/bloc/raffle_state.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_create_page.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_details_page.dart';
 
-import '../../data/datasources/raffle_local_datasource.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class RaffleListPage extends StatefulWidget {
   const RaffleListPage({super.key});
@@ -41,30 +41,6 @@ class _RaffleListPageState extends State<RaffleListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mis Rifas'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              context.read<RaffleBloc>().add(LoadRaffles());
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_forever),
-            tooltip: 'Limpiar Base de Datos',
-            onPressed: () async {
-              await RaffleLocalDatasource.instance.clearDatabase();
-              if (context.mounted) {
-                context.read<RaffleBloc>().add(LoadRaffles());
-              }
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Base de datos limpiada ✅')),
-              );
-            },
-          ),
-        ],
-      ),
       body: BlocBuilder<RaffleBloc, RaffleState>(
         builder: (context, state) {
           if (state is RaffleLoading) {
@@ -162,6 +138,8 @@ class _RaffleListPageState extends State<RaffleListPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        foregroundColor: Colors.black,
+        backgroundColor: AppColors.primary,
         onPressed: () async {
           final bloc = context.read<RaffleBloc>();
 

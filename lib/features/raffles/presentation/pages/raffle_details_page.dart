@@ -113,20 +113,22 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                       ],
                     ),
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          children: [
-                            FinancialSummary(
-                              raffle: raffle,
-                              tickets: tickets,
-                            ),
-                            const SizedBox(height: 16),
-                            TicketGrid(
-                              tickets: tickets,
-                              onTap: _openTicketInfoModal,
-                            ),
-                          ],
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            children: [
+                              FinancialSummary(
+                                raffle: raffle,
+                                tickets: tickets,
+                              ),
+                              const SizedBox(height: 16),
+                              TicketGrid(
+                                tickets: tickets,
+                                onTap: _openTicketInfoModal,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../features/raffles/presentation/pages/raffle_page.dart';
-import '../features/raffles/presentation/pages/giveaway_page.dart';
+import 'package:raffle/features/giveaways/presentation/pages/giveaway_list_page.dart';
+import '../core/theme/app_colors.dart';
+import '../features/raffles/presentation/pages/raffle_list_page.dart';
 import '../features/raffles/presentation/pages/trash_page.dart';
 import '../features/raffles/presentation/pages/history_page.dart';
 import '../features/raffles/presentation/pages/settings_page.dart';
@@ -16,17 +17,17 @@ class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    RafflePage(),
-    GiveawayPage(),
+    RaffleListPage(),
+    GiveawaysListPage(),
     TrashPage(),
     HistoryPage(),
     SettingsPage(),
   ];
 
   final List<String> _titles = [
-    'Raffles',
-    'Giveaways',
-    'Trash',
+    'Rifas',
+    'Sorteos',
+    'Papelera',
     'History',
     'Settings',
   ];
@@ -43,37 +44,20 @@ class _MainLayoutState extends State<MainLayout> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         backgroundColor: Colors.black,
-        selectedItemColor: Colors.greenAccent,
+        selectedItemColor: AppColors.primary,
         unselectedItemColor: Colors.grey,
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard), label: "Raffles"),
+              icon: Icon(Icons.card_giftcard), label: "Rifas"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.card_giftcard), label: "Giveaways"),
-          BottomNavigationBarItem(icon: Icon(Icons.delete), label: "Trash"),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: "Settings"),
+              icon: Icon(Icons.card_giftcard), label: "Sorteos"),
+          BottomNavigationBarItem(icon: Icon(Icons.delete), label: "Papelera"),
+          //BottomNavigationBarItem(icon: Icon(Icons.history), label: "History"),
+          //BottomNavigationBarItem(
+          //icon: Icon(Icons.settings), label: "Settings"),
         ],
-      ),
-      drawer: Drawer(
-        backgroundColor: Colors.black87,
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: const [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.green),
-              child: Text('Menu',
-                  style: TextStyle(color: Colors.white, fontSize: 24)),
-            ),
-            ListTile(
-              leading: Icon(Icons.info),
-              title: Text('About'),
-            ),
-          ],
-        ),
       ),
     );
   }
