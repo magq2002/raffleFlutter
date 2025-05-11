@@ -119,7 +119,7 @@ class _RaffleListPageState extends State<RaffleListPage> {
                       ],
                     ),
                     trailing: Text(
-                      raffle.status.toUpperCase(),
+                      _getStatusDisplayName(raffle.status).toUpperCase(),
                       style: TextStyle(
                         color: _getStatusColor(raffle.status),
                         fontWeight: FontWeight.bold,
@@ -172,6 +172,19 @@ class _RaffleListPageState extends State<RaffleListPage> {
         return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+  String _getStatusDisplayName(String status) {
+    switch (status) {
+      case 'active':
+        return 'Activa';
+      case 'inactive':
+        return 'Inactiva';
+      case 'expired':
+        return 'Expirada';
+      default:
+        return status;
     }
   }
 }
