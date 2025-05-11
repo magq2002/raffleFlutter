@@ -42,7 +42,9 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
         name: event.name,
         contact: event.contact,
       );
-      add(LoadParticipants(giveawayId: event.giveawayId));
+      emit(ParticipantLoading()); // fuerza cambio de estado
+      final participants = await useCases.getParticipants(event.giveawayId);
+      emit(ParticipantLoaded(participants));
     } catch (e) {
       emit(ParticipantError(e.toString()));
     }
