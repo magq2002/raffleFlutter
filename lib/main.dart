@@ -16,6 +16,7 @@ import 'package:raffle/features/giveaways/data/datasources/participant_local_dat
 import 'features/giveaways/domain/use_cases/giveaway_use_cases.dart';
 import 'features/giveaways/domain/use_cases/participant_usecases.dart';
 import 'layout/main_layout.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() {
   final RaffleRepository raffleRepository = RaffleRepositoryImpl(
@@ -53,6 +54,15 @@ class MyApp extends StatelessWidget {
       title: 'Raffle App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
+      locale: const Locale('es'), // Fuerza español
+      supportedLocales: const [
+        Locale('es'), // Solo español en este caso
+      ],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: const MainLayout(),
     );
   }
