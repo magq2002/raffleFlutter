@@ -8,8 +8,6 @@ import 'package:raffle/features/raffles/presentation/bloc/raffle_state.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_create_page.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_details_page.dart';
 
-import '../../../../core/theme/app_colors.dart';
-
 class RaffleListPage extends StatefulWidget {
   const RaffleListPage({super.key});
 
@@ -139,7 +137,7 @@ class _RaffleListPageState extends State<RaffleListPage> {
       ),
       floatingActionButton: FloatingActionButton(
         foregroundColor: Colors.black,
-        backgroundColor: AppColors.primary,
+        backgroundColor: Colors.greenAccent,
         onPressed: () async {
           final bloc = context.read<RaffleBloc>();
 

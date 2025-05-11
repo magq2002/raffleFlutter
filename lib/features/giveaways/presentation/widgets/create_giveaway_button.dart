@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../pages/giveaway_create_page.dart';
 
 class CreateGiveawayButton extends StatelessWidget {
@@ -9,7 +8,7 @@ class CreateGiveawayButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton.extended(
       foregroundColor: Colors.black,
-      backgroundColor: AppColors.primary,
+      backgroundColor: Colors.greenAccent,
       onPressed: () {
         Navigator.push(
           context,

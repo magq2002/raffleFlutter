@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/giveaway.dart';
 import '../bloc/participant_bloc.dart';
 import '../widgets/giveaway_description_widget.dart';
@@ -29,7 +28,7 @@ class GiveawayDetailsPage extends StatelessWidget {
             onPressed: () => _showAddParticipantDialog(context),
             icon: const Icon(
               Icons.person_add,
-              color: AppColors.primary,
+              color: Colors.greenAccent,
             ),
             tooltip: 'Nuevo Participante',
           )
@@ -121,7 +120,7 @@ class GiveawayDetailsPage extends StatelessWidget {
       default:
         awardTitle = '🎉 ¡Ganador!';
         awardIcon =
-            const Icon(Icons.emoji_events, color: AppColors.primary, size: 48);
+            const Icon(Icons.emoji_events, color: Colors.greenAccent, size: 48);
     }
 
     showDialog(

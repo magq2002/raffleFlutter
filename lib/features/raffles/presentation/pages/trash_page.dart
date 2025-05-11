@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/data/database_cleaner.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../bloc/raffle_bloc.dart';
 import '../bloc/raffle_event.dart';
 
@@ -14,7 +13,7 @@ class TrashPage extends StatelessWidget {
       child: Card(
         elevation: 8,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        color: AppColors.primary.withOpacity(0.9),
+        color: Colors.greenAccent.withOpacity(0.9),
         child: Padding(
           padding: const EdgeInsets.all(24.0),
           child: Column(
