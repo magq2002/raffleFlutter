@@ -1,30 +1,18 @@
 import 'package:raffle/features/raffles/domain/entities/raffle.dart';
-import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 
 class RaffleModel extends Raffle {
   RaffleModel({
-    required int? id,
-    required String name,
-    required String lotteryNumber,
-    required double price,
-    required int totalTickets,
-    required String status,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-    String? imagePath,
-    List<Ticket>? tickets,
-  }) : super(
-          id: id,
-          name: name,
-          lotteryNumber: lotteryNumber,
-          price: price,
-          totalTickets: totalTickets,
-          status: status,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-          imagePath: imagePath,
-          tickets: tickets,
-        );
+    required super.id,
+    required super.name,
+    required super.lotteryNumber,
+    required super.price,
+    required super.totalTickets,
+    required super.status,
+    required super.createdAt,
+    required super.updatedAt,
+    super.imagePath,
+    super.tickets,
+  });
 
   factory RaffleModel.fromMap(Map<String, dynamic> map) {
     return RaffleModel(

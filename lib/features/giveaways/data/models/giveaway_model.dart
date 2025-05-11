@@ -2,22 +2,14 @@ import '../../domain/entities/giveaway.dart';
 
 class GiveawayModel extends Giveaway {
   GiveawayModel({
-    required int? id,
-    required String name,
-    required String description,
-    required DateTime drawDate,
-    required String status,
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) : super(
-          id: id,
-          name: name,
-          description: description,
-          drawDate: drawDate,
-          status: status,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-        );
+    required super.id,
+    required super.name,
+    required super.description,
+    required super.drawDate,
+    required super.status,
+    required super.createdAt,
+    required super.updatedAt,
+  });
 
   factory GiveawayModel.fromMap(Map<String, dynamic> map) {
     return GiveawayModel(

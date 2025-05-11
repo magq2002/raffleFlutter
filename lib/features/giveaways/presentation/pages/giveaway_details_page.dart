@@ -8,7 +8,6 @@ import '../widgets/giveaway_stats_widget.dart';
 import '../widgets/giveaway_status_widget.dart';
 import '../widgets/participant_list_widget.dart';
 import '../widgets/preselect_participants_button.dart';
-import '../widgets/update_giveaway_status_button.dart';
 
 class GiveawayDetailsPage extends StatelessWidget {
   final Giveaway giveaway;

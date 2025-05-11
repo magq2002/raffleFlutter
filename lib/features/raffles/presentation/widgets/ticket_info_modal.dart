@@ -4,11 +4,11 @@ import 'ticket_export_widget.dart';
 
 class TicketInfoModal extends StatefulWidget {
   const TicketInfoModal({
-    Key? key,
+    super.key,
     required this.ticket,
     required this.onClose,
     required this.onEdit,
-  }) : super(key: key);
+  });
   final Ticket? ticket;
   final VoidCallback onClose;
   final VoidCallback onEdit;
@@ -60,7 +60,7 @@ class _TicketInfoModalState extends State<TicketInfoModal> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                    onPressed: widget.onEdit,
+                      onPressed: widget.onEdit,
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.orange,
                         side: const BorderSide(color: Colors.orange),

@@ -105,8 +105,9 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       final parsed = double.tryParse(value ?? '');
-                      if (parsed == null || parsed <= 0)
+                      if (parsed == null || parsed <= 0) {
                         return 'Precio inválido';
+                      }
                       return null;
                     },
                   ),
@@ -117,8 +118,9 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       final parsed = int.tryParse(value ?? '');
-                      if (parsed == null || parsed <= 0)
+                      if (parsed == null || parsed <= 0) {
                         return 'Cantidad inválida';
+                      }
                       return null;
                     },
                   ),

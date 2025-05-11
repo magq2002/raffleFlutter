@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/giveaway_bloc.dart';
 import '../widgets/giveaway_list_widget.dart';
-import '../widgets/participant_list_widget.dart';
 import 'giveaway_create_page.dart';
 
 class GiveawayPage extends StatelessWidget {

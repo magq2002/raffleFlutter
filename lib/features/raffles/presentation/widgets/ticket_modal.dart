@@ -43,7 +43,8 @@ class _TicketModalState extends State<TicketModal> {
         widget.ticket.copyWith(
           status: _status,
           buyerName: _status == 'available' ? null : _nameCtrl.text.trim(),
-          buyerContact: _status == 'available' ? null : _contactCtrl.text.trim(),
+          buyerContact:
+              _status == 'available' ? null : _contactCtrl.text.trim(),
         ),
       );
     }
@@ -100,7 +101,7 @@ class _TicketModalState extends State<TicketModal> {
     final isSelected = _status == value;
     String label;
     IconData icon;
-    
+
     switch (value) {
       case 'sold':
         label = 'VENDIDO';
@@ -118,27 +119,31 @@ class _TicketModalState extends State<TicketModal> {
         label = value.toUpperCase();
         icon = Icons.circle;
     }
-    
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Container(
         width: double.infinity,
         height: 60,
         decoration: BoxDecoration(
-          gradient: isSelected ? LinearGradient(
-            colors: [color.withOpacity(0.7), color],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ) : null,
+          gradient: isSelected
+              ? LinearGradient(
+                  colors: [color.withOpacity(0.7), color],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                )
+              : null,
           color: isSelected ? null : Colors.grey[800],
           borderRadius: BorderRadius.circular(15),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: color.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ] : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: color.withOpacity(0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: MaterialButton(
           onPressed: () => setState(() => _status = value),
@@ -171,9 +176,9 @@ class _TicketModalState extends State<TicketModal> {
 
   @override
   Widget build(BuildContext context) {
-    final bool isCurrentlySoldOrReserved = 
+    final bool isCurrentlySoldOrReserved =
         widget.ticket.status == 'sold' || widget.ticket.status == 'reserved';
-    
+
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -198,7 +203,8 @@ class _TicketModalState extends State<TicketModal> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primaryContainer,
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
@@ -226,8 +232,7 @@ class _TicketModalState extends State<TicketModal> {
                   ],
                 ),
                 const Divider(height: 32, thickness: 1),
-                
-             
+
                 if (isCurrentlySoldOrReserved && _status != 'available') ...[
                   Row(
                     children: [
@@ -241,7 +246,8 @@ class _TicketModalState extends State<TicketModal> {
                       ),
                       const SizedBox(width: 12),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: _getStatusColor(widget.ticket.status),
                           borderRadius: BorderRadius.circular(30),
@@ -250,15 +256,17 @@ class _TicketModalState extends State<TicketModal> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              widget.ticket.status == 'sold' 
-                                  ? Icons.shopping_cart 
+                              widget.ticket.status == 'sold'
+                                  ? Icons.shopping_cart
                                   : Icons.bookmark,
                               color: Colors.white,
                               size: 16,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              widget.ticket.status == 'sold' ? 'Vendido' : 'Reservado',
+                              widget.ticket.status == 'sold'
+                                  ? 'Vendido'
+                                  : 'Reservado',
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -270,11 +278,13 @@ class _TicketModalState extends State<TicketModal> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withOpacity(0.5),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: Theme.of(context).colorScheme.outlineVariant,
@@ -309,7 +319,10 @@ class _TicketModalState extends State<TicketModal> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
-                              color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .outline
+                                  .withOpacity(0.5),
                             ),
                           ),
                           child: Padding(
@@ -322,7 +335,8 @@ class _TicketModalState extends State<TicketModal> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w500,
-                                    color: Theme.of(context).colorScheme.onSurface,
+                                    color:
+                                        Theme.of(context).colorScheme.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
@@ -331,14 +345,18 @@ class _TicketModalState extends State<TicketModal> {
                                     Icon(
                                       Icons.phone,
                                       size: 16,
-                                      color: Theme.of(context).colorScheme.secondary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
                                     ),
                                     const SizedBox(width: 6),
                                     Text(
                                       widget.ticket.buyerContact ?? '',
                                       style: TextStyle(
                                         fontSize: 14,
-                                        color: Theme.of(context).colorScheme.secondary,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
                                       ),
                                     ),
                                   ],
@@ -351,8 +369,6 @@ class _TicketModalState extends State<TicketModal> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
-            
                   if (widget.ticket.status == 'reserved')
                     Container(
                       height: 54,
@@ -374,7 +390,8 @@ class _TicketModalState extends State<TicketModal> {
                       ),
                       child: ElevatedButton.icon(
                         onPressed: () => setState(() => _status = 'sold'),
-                        icon: const Icon(Icons.shopping_cart, color: Colors.white),
+                        icon: const Icon(Icons.shopping_cart,
+                            color: Colors.white),
                         label: const Text(
                           'Convertir a Vendido',
                           style: TextStyle(
@@ -417,7 +434,6 @@ class _TicketModalState extends State<TicketModal> {
                     ),
                   ),
                 ] else ...[
-                 
                   Padding(
                     padding: const EdgeInsets.only(bottom: 10),
                     child: Text(
@@ -430,15 +446,13 @@ class _TicketModalState extends State<TicketModal> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  
-                  
                   _statusButton('sold', Colors.red.shade500),
                   _statusButton('reserved', Colors.orange.shade400),
                   _statusButton('available', Colors.green.shade500),
                 ],
-                
+
                 const SizedBox(height: 24),
-           
+
                 if (_status != 'available') ...[
                   Form(
                     key: _formKey,
@@ -479,7 +493,10 @@ class _TicketModalState extends State<TicketModal> {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                               borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outline
+                                    .withOpacity(0.5),
                                 width: 1.5,
                               ),
                             ),
@@ -515,7 +532,10 @@ class _TicketModalState extends State<TicketModal> {
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(15),
                               borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .outline
+                                    .withOpacity(0.5),
                                 width: 1.5,
                               ),
                             ),
@@ -538,9 +558,9 @@ class _TicketModalState extends State<TicketModal> {
                     ),
                   ),
                 ],
-                
+
                 const SizedBox(height: 30),
-             
+
                 Container(
                   height: 60,
                   decoration: BoxDecoration(

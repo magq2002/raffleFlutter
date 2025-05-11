@@ -1,27 +1,17 @@
 import '../../domain/entities/participant.dart';
 
 class ParticipantModel extends Participant {
-  ParticipantModel({
-    int? id,
-    required int giveawayId,
-    required String name,
-    required String contact,
-    required bool isPreselected,
-    required bool isWinner,
-    String? award, // NUEVO
-    required DateTime createdAt,
-    required DateTime updatedAt,
-  }) : super(
-          id: id,
-          giveawayId: giveawayId,
-          name: name,
-          contact: contact,
-          isPreselected: isPreselected,
-          isWinner: isWinner,
-          award: award, // NUEVO
-          createdAt: createdAt,
-          updatedAt: updatedAt,
-        );
+  const ParticipantModel({
+    super.id,
+    required super.giveawayId,
+    required super.name,
+    required super.contact,
+    required super.isPreselected,
+    required super.isWinner,
+    super.award, // NUEVO
+    required super.createdAt,
+    required super.updatedAt,
+  });
 
   factory ParticipantModel.fromMap(Map<String, dynamic> map) {
     return ParticipantModel(

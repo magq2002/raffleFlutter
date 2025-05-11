@@ -153,7 +153,7 @@ class ParticipantLocalDatasource {
     );
 
     String award;
-    if (existingWinners.length == 0) {
+    if (existingWinners.isEmpty) {
       award = 'Oro';
     } else if (existingWinners.length == 1) {
       award = 'Plata';
