@@ -8,7 +8,7 @@
 PRODUCT_NAME = raffle
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = raffle.com.raffle
+PRODUCT_BUNDLE_IDENTIFIER = io.bemytech.raffle
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 raffle.com. All rights reserved.

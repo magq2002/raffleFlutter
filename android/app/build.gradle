@@ -5,8 +5,17 @@ plugins {
     id "dev.flutter.flutter-gradle-plugin"
 }
 
+import java.util.Properties
+import java.io.FileInputStream
+
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file("key.properties")
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
-    namespace = 'raffle.com.raffle'
+    namespace = 'io.bemytech.raffle'
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
@@ -21,7 +30,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "raffle.com.raffle"
+        applicationId = "io.bemytech.raffle"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -30,15 +39,28 @@ android {
         versionName = flutter.versionName
     }
 
+     signingConfigs {
+        create("release") {
+        keyAlias   keystoreProperties['keyAlias']
+        keyPassword keystoreProperties['keyPassword']
+        storeFile  file(keystoreProperties['storeFile'])
+        storePassword keystoreProperties['storePassword']
+    }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.debug
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    implementation "com.google.android.material:material:1.8.0"
 }
