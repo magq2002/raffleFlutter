@@ -49,42 +49,69 @@ class GiveawayDetailsPage extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GiveawayDescriptionWidget(description: giveaway.description),
+              const SizedBox(height: 16),
               GiveawayStatsWidget(giveawayId: giveaway.id!),
+              const SizedBox(height: 16),
               GiveawayStatusWidget(giveaway: giveaway),
-              ParticipantListWidget(giveawayId: giveaway.id!),
-              const SizedBox(height: 20),
-              PreselectParticipantsButton(
-                onPreselect: (count) {
-                  context.read<ParticipantBloc>().add(
-                        PreselectParticipantsEvent(
-                          giveawayId: giveaway.id!,
-                          count: count,
-                        ),
-                      );
+              const SizedBox(height: 16),
+              const Text(
+                "Participantes",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300, width: 1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ParticipantListWidget(giveawayId: giveaway.id!),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: PreselectParticipantsButton(
+                      onPreselect: (count) {
+                        context.read<ParticipantBloc>().add(
+                              PreselectParticipantsEvent(
+                                giveawayId: giveaway.id!,
+                                count: count,
+                              ),
+                            );
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                          Text('🎯 Se preseleccionaron $count participantes'),
-                      backgroundColor: Colors.blueAccent,
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                '🎯 Se preseleccionaron $count participantes'),
+                            backgroundColor: Colors.blueAccent,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<ParticipantBloc>().add(
+                              DrawWinnerEvent(giveawayId: giveaway.id!),
+                            );
+                      },
+                      icon: const Icon(Icons.casino),
+                      label: const Text('Sortear Ganador'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.read<ParticipantBloc>().add(
-                        DrawWinnerEvent(giveawayId: giveaway.id!),
-                      );
-                },
-                icon: const Icon(Icons.casino),
-                label: const Text('Sortear Ganador'),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),

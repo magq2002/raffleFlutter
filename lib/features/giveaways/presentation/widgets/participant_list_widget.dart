@@ -29,8 +29,9 @@ class ParticipantListWidget extends StatelessWidget {
             });
 
           return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: false,
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
             itemCount: participants.length,
             itemBuilder: (context, index) =>
                 _buildParticipantItem(context, participants[index]),
