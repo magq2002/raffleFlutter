@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
+
 class PreselectParticipantsButton extends StatelessWidget {
   final void Function(int count) onPreselect;
 
@@ -11,18 +13,18 @@ class PreselectParticipantsButton extends StatelessWidget {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Preselect Participants'),
+        title: const Text('Preseleccionar Participantes'),
         content: TextField(
           controller: controller,
           keyboardType: TextInputType.number,
           decoration: const InputDecoration(
-            labelText: 'Number to preselect',
+            labelText: 'Número a preseleccionar',
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const Text('Cancelar'),
           ),
           ElevatedButton(
             onPressed: () {
@@ -32,7 +34,7 @@ class PreselectParticipantsButton extends StatelessWidget {
                 onPreselect(count);
               }
             },
-            child: const Text('Preselect'),
+            child: const Text('Preseleccionar'),
           ),
         ],
       ),
@@ -46,7 +48,7 @@ class PreselectParticipantsButton extends StatelessWidget {
       icon: const Icon(Icons.how_to_reg),
       label: const Text('Preseleccionar Participantes'),
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: AppColors.primary,
         foregroundColor: Colors.black,
       ),
     );
