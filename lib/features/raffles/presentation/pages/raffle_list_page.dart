@@ -105,7 +105,7 @@ class _RaffleListPageState extends State<RaffleListPage> {
                                               color: Colors.white),
                                         ),
                                       ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 12),
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 6, vertical: 2),
