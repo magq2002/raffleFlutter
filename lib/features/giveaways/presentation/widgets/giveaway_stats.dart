@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/participant.dart';
 
 class GiveawayStats extends StatelessWidget {
@@ -29,7 +30,7 @@ class GiveawayStats extends StatelessWidget {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.greenAccent,
+            color: AppColors.primary,
           ),
         ),
         const SizedBox(height: 4),

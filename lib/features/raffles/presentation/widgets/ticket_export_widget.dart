@@ -8,6 +8,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/ticket.dart';
 
 class TicketExportWidget extends StatefulWidget {
@@ -103,7 +104,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                           Text(
                             ticket.buyerName ?? '—',
                             style: const TextStyle(
-                              color: Colors.greenAccent,
+                              color: AppColors.primary,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                             ),
@@ -184,7 +185,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                   child: Text(
                     '¡GRACIAS POR PARTICIPAR!',
                     style: TextStyle(
-                      color: Colors.greenAccent,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

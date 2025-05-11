@@ -57,12 +57,24 @@ class GiveawayCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: Text(
-            giveaway.status.toUpperCase(),
+            _translateStatus(giveaway.status),
             style: const TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ),
       ),
     );
+  }
+
+  String _translateStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'Completado';
+      case 'cancelled':
+        return 'Cancelado';
+      case 'pending':
+      default:
+        return 'Pendiente';
+    }
   }
 }
