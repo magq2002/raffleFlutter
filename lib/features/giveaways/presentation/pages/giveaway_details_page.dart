@@ -21,8 +21,12 @@ class GiveawayDetailsPage extends StatelessWidget {
         .add(LoadParticipants(giveawayId: giveaway.id!));
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text(giveaway.name),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             onPressed: () => _showAddParticipantDialog(context),
