@@ -38,7 +38,8 @@ class RaffleBloc extends Bloc<RaffleEvent, RaffleState> {
           status: 'active',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          imagePath: event.imagePath, // ⬅️ Aquí se incluye la imagen
+          imagePath: event.imagePath,
+          date: event.drawDate,
         );
 
         final tickets = List.generate(event.totalTickets, (i) {

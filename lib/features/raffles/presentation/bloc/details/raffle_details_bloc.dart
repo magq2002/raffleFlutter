@@ -69,12 +69,42 @@ class RaffleDetailsBloc extends Bloc<RaffleDetailsEvent, RaffleDetailsState> {
             return;
           }
 
-          await repository.updateTicket(event.ticket);
-          add(LoadRaffleDetails(raffleId));
-        }
-      } catch (e) {
-        print("hola 2");
+          print('🔄 Iniciando actualización del ticket:');
+          print('ID del ticket: ${event.ticket.id}');
+          print('Número del ticket: ${event.ticket.number}');
+          print('Estado: ${event.ticket.status}');
+          print('Comprador: ${event.ticket.buyerName}');
+          print('Contacto: ${event.ticket.buyerContact}');
 
+          // Actualizar el ticket
+          await repository.updateTicket(event.ticket);
+          print('✅ Ticket actualizado en la base de datos');
+
+          // Recargar los datos
+          print('🔄 Recargando datos del raffle...');
+          final result = await repository.getRaffleWithTickets(raffleId);
+          if (result == null) {
+            print('❌ No se encontró el raffle después de la actualización');
+            emit(const RaffleDetailsError('Raffle not found after update.'));
+            return;
+          }
+
+          final raffleMap = Map<String, dynamic>.from(result['raffle']);
+          final ticketsList = List<Map<String, dynamic>>.from(result['tickets']);
+          
+          final raffle = RaffleModel.fromMap(raffleMap).toEntity();
+          final tickets = ticketsList.map((t) {
+            final ticket = TicketModel.fromMap(t).toEntity();
+            print('📋 Ticket recargado: ${ticket.id} - Estado: ${ticket.status} - Comprador: ${ticket.buyerName}');
+            return ticket;
+          }).toList();
+          
+          print('✅ Datos recargados correctamente');
+          emit(RaffleDetailsLoaded(raffle: raffle, tickets: tickets));
+        }
+      } catch (e, stack) {
+        print("❌ Error al actualizar ticket: $e");
+        print("📍 Stack trace:\n$stack");
         emit(RaffleDetailsError(e.toString()));
       }
     });

@@ -76,7 +76,13 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
       builder: (_) => TicketModal(
         ticket: ticket,
         onSubmit: (updatedTicket) {
-          Navigator.of(context).pop();
+          print('🔄 Ticket actualizado en el modal:');
+          print('ID: ${updatedTicket.id}');
+          print('Estado: ${updatedTicket.status}');
+          print('Comprador: ${updatedTicket.buyerName}');
+          print('Contacto: ${updatedTicket.buyerContact}');
+          
+          Navigator.of(context).pop(); // Cerrar el modal
           _handleTicketUpdate(updatedTicket);
         },
         onClose: () => Navigator.of(context).pop(),

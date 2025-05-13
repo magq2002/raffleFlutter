@@ -39,13 +39,12 @@ class _TicketModalState extends State<TicketModal> {
 
   void _save() {
     if (_validate()) {
-      widget.onSubmit(
-        widget.ticket.copyWith(
-          status: _status,
-          buyerName: _status == 'available' ? null : _nameCtrl.text.trim(),
-          buyerContact: _status == 'available' ? null : _contactCtrl.text.trim(),
-        ),
+      final updatedTicket = widget.ticket.copyWith(
+        status: _status,
+        buyerName: _status == 'available' ? null : _nameCtrl.text.trim(),
+        buyerContact: _status == 'available' ? null : _contactCtrl.text.trim(),
       );
+      widget.onSubmit(updatedTicket);
     }
   }
 
@@ -400,7 +399,19 @@ class _TicketModalState extends State<TicketModal> {
                       border: Border.all(color: Colors.grey.shade400),
                     ),
                     child: OutlinedButton.icon(
-                      onPressed: () => setState(() => _status = 'available'),
+                      onPressed: () {
+                        setState(() {
+                          _status = 'available';
+                          _nameCtrl.clear();
+                          _contactCtrl.clear();
+                        });
+                        final updatedTicket = widget.ticket.copyWith(
+                          status: 'available',
+                          buyerName: null,
+                          buyerContact: null,
+                        );
+                        widget.onSubmit(updatedTicket);
+                      },
                       icon: const Icon(Icons.cancel),
                       label: const Text(
                         'Cancelar Venta/Reserva',
