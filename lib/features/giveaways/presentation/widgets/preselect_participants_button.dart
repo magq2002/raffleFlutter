@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/keyboard_dismissible.dart';
 
 class PreselectParticipantsButton extends StatelessWidget {
   final void Function(int count) onPreselect;
@@ -14,11 +14,13 @@ class PreselectParticipantsButton extends StatelessWidget {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Preseleccionar Participantes'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(
-            labelText: 'Número a preseleccionar',
+        content: KeyboardDismissible(
+          child: TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: 'Número a preseleccionar',
+            ),
           ),
         ),
         actions: [

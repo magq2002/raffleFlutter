@@ -24,6 +24,7 @@ class CreateRaffle extends RaffleEvent {
   final String lotteryNumber;
   final double price;
   final int totalTickets;
+  final DateTime drawDate;
   final String? imagePath;
 
   const CreateRaffle({
@@ -31,6 +32,7 @@ class CreateRaffle extends RaffleEvent {
     required this.lotteryNumber,
     required this.price,
     required this.totalTickets,
+    required this.drawDate,
     this.imagePath,
   });
 

@@ -21,8 +21,8 @@ class TicketDao {
       await localDatasource.updateTicket(
         ticketId: ticket.id!,
         status: ticket.status,
-        buyerName: ticket.buyerName,
-        buyerContact: ticket.buyerContact,
+        buyerName: ticket.status == 'available' ? null : ticket.buyerName,
+        buyerContact: ticket.status == 'available' ? null : ticket.buyerContact,
       );
     }
   }

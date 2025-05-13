@@ -1,14 +1,11 @@
 import 'dart:io';
-
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-
 import '../models/raffle_model.dart';
 
 class RaffleLocalDatasource {
-  static final RaffleLocalDatasource instance =
-      RaffleLocalDatasource._internal();
+  static final RaffleLocalDatasource instance = RaffleLocalDatasource._internal();
   static Database? _database;
 
   RaffleLocalDatasource._internal();
@@ -41,6 +38,7 @@ class RaffleLocalDatasource {
         status TEXT NOT NULL,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
+        date TEXT NOT NULL,
         image_path TEXT
       )
     ''');
@@ -63,6 +61,7 @@ class RaffleLocalDatasource {
     required String lotteryNumber,
     required double price,
     required int totalTickets,
+    required DateTime date,
     String? imagePath,
   }) async {
     final db = await database;
@@ -76,6 +75,7 @@ class RaffleLocalDatasource {
       'status': 'active',
       'created_at': now,
       'updated_at': now,
+      'date': date.toIso8601String(),
       'image_path': imagePath,
     });
   }
@@ -106,13 +106,22 @@ class RaffleLocalDatasource {
     String? buyerContact,
   }) async {
     final db = await database;
+    final Map<String, dynamic> values = {
+      'status': status,
+    };
+    
+    // Only include buyer fields if status is not 'available'
+    if (status != 'available') {
+      values['buyer_name'] = buyerName;
+      values['buyer_contact'] = buyerContact;
+    } else {
+      values['buyer_name'] = null;
+      values['buyer_contact'] = null;
+    }
+    
     await db.update(
       'tickets',
-      {
-        'status': status,
-        'buyer_name': buyerName,
-        'buyer_contact': buyerContact,
-      },
+      values,
       where: 'id = ?',
       whereArgs: [ticketId],
     );
@@ -171,6 +180,7 @@ class RaffleLocalDatasource {
       lotteryNumber: model.lotteryNumber,
       price: model.price,
       totalTickets: model.totalTickets,
+      date: model.date,
       imagePath: model.imagePath,
     );
   }

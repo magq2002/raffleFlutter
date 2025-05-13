@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:raffle/features/raffles/domain/entities/ticket.dart';
+import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_bloc.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_event.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_state.dart';
@@ -22,6 +23,7 @@ class RaffleDetailsPage extends StatefulWidget {
 class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   bool showStatusModal = false;
   bool showDeleteConfirm = false;
+  Raffle? raffle;
 
   @override
   void initState() {
@@ -49,11 +51,14 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   }
 
   void _openTicketInfoModal(Ticket ticket) {
+    if (raffle == null) return;
+    
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (_) => TicketInfoModal(
         ticket: ticket,
+        raffle: raffle!,
         onClose: () => Navigator.of(context).pop(),
         onEdit: () {
           Navigator.of(context).pop(); // cerrar InfoModal
@@ -71,7 +76,13 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
       builder: (_) => TicketModal(
         ticket: ticket,
         onSubmit: (updatedTicket) {
-          Navigator.of(context).pop();
+          print('🔄 Ticket actualizado en el modal:');
+          print('ID: ${updatedTicket.id}');
+          print('Estado: ${updatedTicket.status}');
+          print('Comprador: ${updatedTicket.buyerName}');
+          print('Contacto: ${updatedTicket.buyerContact}');
+          
+          Navigator.of(context).pop(); // Cerrar el modal
           _handleTicketUpdate(updatedTicket);
         },
         onClose: () => Navigator.of(context).pop(),
@@ -89,7 +100,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
           }
 
           if (state is RaffleDetailsLoaded) {
-            final raffle = state.raffle;
+            raffle = state.raffle;
             final tickets = state.tickets;
 
             return Stack(
@@ -100,7 +111,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                       pinned: true,
                       expandedHeight: 160,
                       flexibleSpace: FlexibleSpaceBar(
-                        title: Text(raffle.name),
+                        title: Text(raffle!.name),
                         background: Container(color: Colors.deepPurple),
                       ),
                       actions: [
@@ -119,7 +130,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                           child: Column(
                             children: [
                               FinancialSummary(
-                                raffle: raffle,
+                                raffle: raffle!,
                                 tickets: tickets,
                               ),
                               const SizedBox(height: 16),
@@ -134,7 +145,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                     ),
                   ],
                 ),
-                if (raffle.status == 'expired')
+                if (raffle!.status == 'expired')
                   Positioned(
                     bottom: 24,
                     left: 16,
@@ -152,7 +163,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                   ),
                 if (showStatusModal)
                   StatusModal(
-                    currentStatus: raffle.status,
+                    currentStatus: raffle!.status,
                     onSelect: _handleStatusChange,
                     onClose: () => setState(() => showStatusModal = false),
                   ),

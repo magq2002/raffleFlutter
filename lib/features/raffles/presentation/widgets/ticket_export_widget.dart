@@ -6,14 +6,21 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/ticket.dart';
+import '../../domain/entities/raffle.dart';
 
 class TicketExportWidget extends StatefulWidget {
   final Ticket ticket;
+  final Raffle raffle;
 
-  const TicketExportWidget({super.key, required this.ticket});
+  const TicketExportWidget({
+    super.key, 
+    required this.ticket,
+    required this.raffle,
+  });
 
   @override
   State<TicketExportWidget> createState() => _TicketExportWidgetState();
@@ -65,6 +72,13 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
   @override
   Widget build(BuildContext context) {
     final ticket = widget.ticket;
+    final raffle = widget.raffle;
+    final dateFormat = DateFormat('dd/MM/yyyy');
+    final currencyFormat = NumberFormat.currency(
+      symbol: '\$',
+      decimalDigits: 2,
+      locale: 'es',
+    );
 
     return Column(
       children: [
@@ -131,7 +145,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              ticket.status.toUpperCase(),
+                              _translateStatus(ticket.status),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -139,10 +153,14 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                             ),
                           ),
                           const SizedBox(height: 8),
-                          const Text('Fecha del sorteo: 21/3/2025',
-                              style: TextStyle(color: Colors.white54)),
-                          const Text('Precio: \$10.00 ',
-                              style: TextStyle(color: Colors.white54)),
+                          Text(
+                            'Fecha del sorteo: ${dateFormat.format(raffle.date)}',
+                            style: const TextStyle(color: Colors.white54),
+                          ),
+                          Text(
+                            'Precio: ${currencyFormat.format(raffle.price)}',
+                            style: const TextStyle(color: Colors.white54),
+                          ),
                         ],
                       ),
                     ),
@@ -231,6 +249,18 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
         return Colors.orange;
       default:
         return Colors.green;
+    }
+  }
+
+  String _translateStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'available':
+        return 'Disponible';
+      case 'reserved':
+        return 'Reservado';
+      case 'sold':
+      default:
+        return 'Vendido';
     }
   }
 }

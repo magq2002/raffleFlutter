@@ -1,18 +1,32 @@
 import 'package:raffle/features/raffles/domain/entities/raffle.dart';
+import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 
 class RaffleModel extends Raffle {
   RaffleModel({
-    required super.id,
-    required super.name,
-    required super.lotteryNumber,
-    required super.price,
-    required super.totalTickets,
-    required super.status,
-    required super.createdAt,
-    required super.updatedAt,
-    super.imagePath,
-    super.tickets,
-  });
+    required int? id,
+    required String name,
+    required String lotteryNumber,
+    required double price,
+    required int totalTickets,
+    required String status,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    required DateTime date,
+    String? imagePath,
+    List<Ticket>? tickets,
+  }) : super(
+          id: id,
+          name: name,
+          lotteryNumber: lotteryNumber,
+          price: price,
+          totalTickets: totalTickets,
+          status: status,
+          createdAt: createdAt,
+          updatedAt: updatedAt,
+          date: date,
+          imagePath: imagePath,
+          tickets: tickets,
+        );
 
   factory RaffleModel.fromMap(Map<String, dynamic> map) {
     return RaffleModel(
@@ -24,6 +38,7 @@ class RaffleModel extends Raffle {
       status: map['status'],
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
+      date: DateTime.parse(map['date']),
       imagePath: map['image_path'],
     );
   }
@@ -38,6 +53,7 @@ class RaffleModel extends Raffle {
       'status': status,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'date': date.toIso8601String(),
       'image_path': imagePath,
     };
   }
@@ -52,6 +68,7 @@ class RaffleModel extends Raffle {
       status: raffle.status,
       createdAt: raffle.createdAt,
       updatedAt: raffle.updatedAt,
+      date: raffle.date,
       imagePath: raffle.imagePath,
       tickets: raffle.tickets,
     );
@@ -67,6 +84,7 @@ class RaffleModel extends Raffle {
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      date: date,
       imagePath: imagePath,
       tickets: tickets,
     );
