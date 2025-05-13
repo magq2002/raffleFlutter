@@ -17,7 +17,8 @@ class StatusModal extends StatefulWidget {
   State<StatusModal> createState() => _StatusModalState();
 }
 
-class _StatusModalState extends State<StatusModal> with SingleTickerProviderStateMixin {
+class _StatusModalState extends State<StatusModal>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   String? _hoveredStatus;
@@ -81,7 +82,8 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
         child: Dialog(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+          insetPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
@@ -167,23 +169,23 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
                     ),
                   ),
                   Divider(height: 1, color: Colors.white.withAlpha(13)),
-                  
-                  
+
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       children: [
                         ...statuses.map((status) => Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: _buildStatusItem(status),
-                        )).toList(),
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: _buildStatusItem(status),
+                            )),
                       ],
                     ),
                   ),
-                  
+
                   // Pie con botones
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 16),
                     decoration: BoxDecoration(
                       color: Colors.black.withAlpha(51),
                       border: Border(
@@ -197,7 +199,8 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
                           onPressed: widget.onClose,
                           style: TextButton.styleFrom(
                             foregroundColor: Colors.white70,
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
                           ),
                           child: const Text('Cancel'),
                         ),
@@ -216,7 +219,7 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
   Widget _buildStatusItem(Map<String, dynamic> status) {
     final bool isSelected = widget.currentStatus == status['value'];
     final bool isHovered = _hoveredStatus == status['value'];
-    
+
     return MouseRegion(
       onEnter: (_) => setState(() => _hoveredStatus = status['value']),
       onExit: (_) => setState(() => _hoveredStatus = null),
@@ -234,20 +237,20 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
                   ? Colors.white.withAlpha(128)
                   : isHovered
                       ? Colors.white.withAlpha(51)
-                  : Colors.white.withAlpha(13),
+                      : Colors.white.withAlpha(13),
               width: 1,
             ),
-            boxShadow: isSelected || isHovered 
-              ? [
-                  BoxShadow(
-                    color: isSelected 
-                      ? _getStatusColor(status['value']).withAlpha(77)
-                      : Colors.black.withAlpha(26),                    blurRadius: 8,
-
-                    offset: const Offset(0, 4),
-                  )
-                ]
-              : null,
+            boxShadow: isSelected || isHovered
+                ? [
+                    BoxShadow(
+                      color: isSelected
+                          ? _getStatusColor(status['value']).withAlpha(77)
+                          : Colors.black.withAlpha(26),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    )
+                  ]
+                : null,
           ),
           child: Row(
             children: [
@@ -281,7 +284,8 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
                     Text(
                       _getStatusDescription(status['value']),
                       style: TextStyle(
-                        fontSize: 13,color: Colors.white.withAlpha(179),
+                        fontSize: 13,
+                        color: Colors.white.withAlpha(179),
                       ),
                     ),
                   ],
@@ -294,7 +298,7 @@ class _StatusModalState extends State<StatusModal> with SingleTickerProviderStat
                   decoration: BoxDecoration(
                     color: Colors.white.withAlpha(51),
                     shape: BoxShape.circle,
-                      ),
+                  ),
                   child: const Icon(
                     Icons.check,
                     color: Colors.white,

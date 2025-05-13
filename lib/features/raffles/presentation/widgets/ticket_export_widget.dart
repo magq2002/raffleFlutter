@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -182,7 +181,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                           Text('Nombre: ${ticket.buyerName ?? '—'}',
                               style: const TextStyle(color: Colors.white)),
                           Text('Contacto: ${ticket.buyerContact ?? '—'}',
-                              style: const TextStyle(color: Colors.white) ),
+                              style: const TextStyle(color: Colors.white)),
                           const SizedBox(height: 16),
                           Center(
                             child: QrImageView(

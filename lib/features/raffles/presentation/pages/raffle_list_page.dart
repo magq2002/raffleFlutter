@@ -69,63 +69,102 @@ class _RaffleListPageState extends State<RaffleListPage> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    leading:
-                        raffle.imagePath != null && raffle.imagePath!.isNotEmpty
-                            ? ClipOval(
-                                child: Image.file(
-                                  File(raffle.imagePath!),
-                                  width: 44,
-                                  height: 44,
-                                  fit: BoxFit.cover,
-                                  cacheWidth: 100,
-                                  cacheHeight: 100,
+                  child: InkWell(
+                    onTap: () => _navigateToDetails(raffle.id!),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Contenedor de imagen y estado
+                          SizedBox(
+                            width: 60,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                raffle.imagePath != null &&
+                                        raffle.imagePath!.isNotEmpty
+                                    ? ClipOval(
+                                        child: Image.file(
+                                          File(raffle.imagePath!),
+                                          width: 44,
+                                          height: 44,
+                                          fit: BoxFit.cover,
+                                          cacheWidth: 100,
+                                          cacheHeight: 100,
+                                        ),
+                                      )
+                                    : CircleAvatar(
+                                        radius: 22,
+                                        backgroundColor: Colors.deepPurple,
+                                        child: Text(
+                                          raffle.name
+                                              .substring(0, 1)
+                                              .toUpperCase(),
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                      ),
+                                const SizedBox(height: 12),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: _getStatusColor(raffle.status)
+                                        .withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(
+                                      color: _getStatusColor(raffle.status),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _getStatusDisplayName(raffle.status),
+                                    style: TextStyle(
+                                      color: _getStatusColor(raffle.status),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
+                                    ),
+                                  ),
                                 ),
-                              )
-                            : CircleAvatar(
-                                radius: 22,
-                                backgroundColor: Colors.deepPurple,
-                                child: Text(
-                                  raffle.name.substring(0, 1).toUpperCase(),
-                                  style: const TextStyle(color: Colors.white),
-                                ),
-                              ),
-                    title: Text(
-                      raffle.name,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 4),
-                        Text('Lotería #${raffle.lotteryNumber}'),
-                        const SizedBox(height: 6),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: percent,
-                            minHeight: 6,
-                            backgroundColor: Colors.grey[300],
-                            valueColor: AlwaysStoppedAnimation(
-                                Theme.of(context).colorScheme.primary),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text('${(percent * 100).toStringAsFixed(1)}% vendido',
-                            style: const TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                    trailing: Text(
-                      raffle.status.toUpperCase(),
-                      style: TextStyle(
-                        color: _getStatusColor(raffle.status),
-                        fontWeight: FontWeight.bold,
+                          const SizedBox(width: 16),
+                          // Contenido de información
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  raffle.name,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16),
+                                ),
+                                const SizedBox(height: 4),
+                                Text('Lotería #${raffle.lotteryNumber}'),
+                                const SizedBox(height: 6),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: LinearProgressIndicator(
+                                    value: percent,
+                                    minHeight: 6,
+                                    backgroundColor: Colors.grey[300],
+                                    valueColor: const AlwaysStoppedAnimation(
+                                        Color(0xFF00C853)),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                    '${(percent * 100).toStringAsFixed(1)}% vendido',
+                                    style: const TextStyle(fontSize: 12)),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    onTap: () => _navigateToDetails(raffle.id!),
                   ),
                 );
               },
@@ -172,6 +211,19 @@ class _RaffleListPageState extends State<RaffleListPage> {
         return Colors.red;
       default:
         return Colors.grey;
+    }
+  }
+
+  String _getStatusDisplayName(String status) {
+    switch (status) {
+      case 'active':
+        return 'Activa';
+      case 'inactive':
+        return 'Inactiva';
+      case 'expired':
+        return 'Expirada';
+      default:
+        return status;
     }
   }
 }

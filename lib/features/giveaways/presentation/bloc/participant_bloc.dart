@@ -112,7 +112,7 @@ class ParticipantBloc extends Bloc<ParticipantEvent, ParticipantState> {
         emit(WinnerSelected(winner));
       } else {
         emit(
-            ParticipantError('No hay participantes disponibles para sortear.'));
+            const ParticipantError('No hay participantes disponibles para sortear.'));
       }
       add(LoadParticipants(giveawayId: event.giveawayId)); // Recargar
     } catch (e) {

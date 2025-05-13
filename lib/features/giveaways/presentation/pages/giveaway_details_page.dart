@@ -9,7 +9,6 @@ import '../widgets/giveaway_stats_widget.dart';
 import '../widgets/giveaway_status_widget.dart';
 import '../widgets/participant_list_widget.dart';
 import '../widgets/preselect_participants_button.dart';
-import '../widgets/update_giveaway_status_button.dart';
 
 class GiveawayDetailsPage extends StatelessWidget {
   final Giveaway giveaway;
@@ -23,8 +22,12 @@ class GiveawayDetailsPage extends StatelessWidget {
         .add(LoadParticipants(giveawayId: giveaway.id!));
 
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text(giveaway.name),
+        backgroundColor: Colors.black,
+        elevation: 0,
+        foregroundColor: Colors.white,
         actions: [
           IconButton(
             onPressed: () => _showAddParticipantDialog(context),
@@ -51,42 +54,70 @@ class GiveawayDetailsPage extends StatelessWidget {
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
-          child: ListView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GiveawayDescriptionWidget(description: giveaway.description),
+              const SizedBox(height: 16),
               GiveawayStatsWidget(giveawayId: giveaway.id!),
+              const SizedBox(height: 16),
               GiveawayStatusWidget(giveaway: giveaway),
-              ParticipantListWidget(giveawayId: giveaway.id!),
-              const SizedBox(height: 20),
-              PreselectParticipantsButton(
-                onPreselect: (count) {
-                  context.read<ParticipantBloc>().add(
-                        PreselectParticipantsEvent(
-                          giveawayId: giveaway.id!,
-                          count: count,
-                        ),
-                      );
+              const SizedBox(height: 16),
+              const Text(
+                "Participantes",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade200, width: 0.5),
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.grey.shade50.withOpacity(0.05),
+                  ),
+                  child: ParticipantListWidget(giveawayId: giveaway.id!),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: PreselectParticipantsButton(
+                      onPreselect: (count) {
+                        context.read<ParticipantBloc>().add(
+                              PreselectParticipantsEvent(
+                                giveawayId: giveaway.id!,
+                                count: count,
+                              ),
+                            );
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content:
-                          Text('🎯 Se preseleccionaron $count participantes'),
-                      backgroundColor: Colors.blueAccent,
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                                '🎯 Se preseleccionaron $count participantes'),
+                            backgroundColor: Colors.blueAccent,
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        context.read<ParticipantBloc>().add(
+                              DrawWinnerEvent(giveawayId: giveaway.id!),
+                            );
+                      },
+                      icon: const Icon(Icons.casino),
+                      label: const Text('Sortear Ganador'),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.read<ParticipantBloc>().add(
-                        DrawWinnerEvent(giveawayId: giveaway.id!),
-                      );
-                },
-                icon: const Icon(Icons.casino),
-                label: const Text('Sortear Ganador'),
-              ),
-              const SizedBox(height: 20),
             ],
           ),
         ),
