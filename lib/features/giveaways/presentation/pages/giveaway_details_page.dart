@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/keyboard_dismissible.dart';
 import '../../domain/entities/giveaway.dart';
 import '../bloc/participant_bloc.dart';
 import '../widgets/giveaway_description_widget.dart';
@@ -175,37 +176,39 @@ class GiveawayDetailsPage extends StatelessWidget {
           '👤 Agregar Participante',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Nombre',
-                prefixIcon: const Icon(Icons.person),
-                filled: true,
-                fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+        content: KeyboardDismissible(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: 'Nombre',
+                  prefixIcon: const Icon(Icons.person),
+                  filled: true,
+                  fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: contactController,
-              decoration: InputDecoration(
-                labelText: 'Contacto',
-                prefixIcon: const Icon(Icons.phone),
-                filled: true,
-                fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+              const SizedBox(height: 12),
+              TextField(
+                controller: contactController,
+                decoration: InputDecoration(
+                  labelText: 'Contacto',
+                  prefixIcon: const Icon(Icons.phone),
+                  filled: true,
+                  fillColor: Colors.greenAccent.shade100.withOpacity(0.3),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         actions: [
           TextButton(

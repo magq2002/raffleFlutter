@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_bloc.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_event.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/keyboard_dismissible.dart';
 
 class RaffleCreatePage extends StatefulWidget {
   const RaffleCreatePage({super.key});
@@ -73,108 +74,110 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
           elevation: 12,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  const Text(
-                    'Nueva Rifa',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  _buildTextField(
-                    controller: _nameController,
-                    label: 'Nombre de la Rifa',
-                    icon: Icons.title,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Campo obligatorio'
-                        : null,
-                  ),
-                  _buildTextField(
-                    controller: _lotteryNumberController,
-                    label: 'Número de Lotería',
-                    icon: Icons.confirmation_number,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Campo obligatorio'
-                        : null,
-                  ),
-                  _buildTextField(
-                    controller: _priceController,
-                    label: 'Precio del Boleto',
-                    icon: Icons.attach_money,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      final parsed = double.tryParse(value ?? '');
-                      if (parsed == null || parsed <= 0)
-                        return 'Precio inválido';
-                      return null;
-                    },
-                  ),
-                  _buildTextField(
-                    controller: _totalTicketsController,
-                    label: 'Cantidad Total de Boletos',
-                    icon: Icons.format_list_numbered,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      final parsed = int.tryParse(value ?? '');
-                      if (parsed == null || parsed <= 0)
-                        return 'Cantidad inválida';
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('Fecha del sorteo',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: _pickDate,
-                    icon: const Icon(Icons.date_range),
-                    label: Text(_drawDate == null
-                        ? 'Seleccionar fecha'
-                        : '${_drawDate!.toLocal()}'.split(' ')[0]),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.black87,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+          child: KeyboardDismissible(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    const Text(
+                      'Nueva Rifa',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(Icons.image),
-                    label: const Text('Seleccionar imagen (opcional)'),
-                  ),
-                  if (_selectedImage != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.file(_selectedImage!, height: 150),
+                    const SizedBox(height: 24),
+                    _buildTextField(
+                      controller: _nameController,
+                      label: 'Nombre de la Rifa',
+                      icon: Icons.title,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Campo obligatorio'
+                          : null,
+                    ),
+                    _buildTextField(
+                      controller: _lotteryNumberController,
+                      label: 'Número de Lotería',
+                      icon: Icons.confirmation_number,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Campo obligatorio'
+                          : null,
+                    ),
+                    _buildTextField(
+                      controller: _priceController,
+                      label: 'Precio del Boleto',
+                      icon: Icons.attach_money,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        final parsed = double.tryParse(value ?? '');
+                        if (parsed == null || parsed <= 0)
+                          return 'Precio inválido';
+                        return null;
+                      },
+                    ),
+                    _buildTextField(
+                      controller: _totalTicketsController,
+                      label: 'Cantidad Total de Boletos',
+                      icon: Icons.format_list_numbered,
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        final parsed = int.tryParse(value ?? '');
+                        if (parsed == null || parsed <= 0)
+                          return 'Cantidad inválida';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Fecha del sorteo',
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: _pickDate,
+                      icon: const Icon(Icons.date_range),
+                      label: Text(_drawDate == null
+                          ? 'Seleccionar fecha'
+                          : '${_drawDate!.toLocal()}'.split(' ')[0]),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.black87,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
                       ),
                     ),
-                  const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: _submit,
-                    icon: const Icon(Icons.check),
-                    label: const Text('Crear Rifa'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                    const SizedBox(height: 20),
+                    TextButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Icons.image),
+                      label: const Text('Seleccionar imagen (opcional)'),
                     ),
-                  ),
-                ],
+                    if (_selectedImage != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.file(_selectedImage!, height: 150),
+                        ),
+                      ),
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
+                      onPressed: _submit,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Crear Rifa'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

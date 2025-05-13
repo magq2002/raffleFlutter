@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/widgets/keyboard_dismissible.dart';
 import '../bloc/giveaway_bloc.dart';
 
 class GiveawayCreatePage extends StatefulWidget {
@@ -50,71 +51,73 @@ class _GiveawayCreatePageState extends State<GiveawayCreatePage> {
           elevation: 12,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  const Text(
-                    'Nuevo Giveaway',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  _buildTextField(
-                    controller: _nameController,
-                    label: 'Nombre del Sorteo',
-                    icon: Icons.card_giftcard,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Campo obligatorio'
-                        : null,
-                  ),
-                  _buildTextField(
-                    controller: _descriptionController,
-                    label: 'Descripción',
-                    icon: Icons.description,
-                    validator: (value) => value == null || value.isEmpty
-                        ? 'Campo obligatorio'
-                        : null,
-                    maxLines: 3,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('Fecha del sorteo',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: _pickDate,
-                    icon: const Icon(Icons.date_range),
-                    label: Text(_drawDate == null
-                        ? 'Seleccionar fecha'
-                        : '${_drawDate!.toLocal()}'.split(' ')[0]),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.black87,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 12),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+          child: KeyboardDismissible(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    const Text(
+                      'Nuevo Giveaway',
+                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton.icon(
-                    onPressed: _submit,
-                    icon: const Icon(Icons.check),
-                    label: const Text('Crear Sorteo'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30)),
+                    const SizedBox(height: 24),
+                    _buildTextField(
+                      controller: _nameController,
+                      label: 'Nombre del Sorteo',
+                      icon: Icons.card_giftcard,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Campo obligatorio'
+                          : null,
                     ),
-                  ),
-                ],
+                    _buildTextField(
+                      controller: _descriptionController,
+                      label: 'Descripción',
+                      icon: Icons.description,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Campo obligatorio'
+                          : null,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Fecha del sorteo',
+                        style:
+                            TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    ElevatedButton.icon(
+                      onPressed: _pickDate,
+                      icon: const Icon(Icons.date_range),
+                      label: Text(_drawDate == null
+                          ? 'Seleccionar fecha'
+                          : '${_drawDate!.toLocal()}'.split(' ')[0]),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.black87,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
+                      onPressed: _submit,
+                      icon: const Icon(Icons.check),
+                      label: const Text('Crear Sorteo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -12,6 +12,7 @@ class RaffleDao {
       lotteryNumber: raffle.lotteryNumber,
       price: raffle.price,
       totalTickets: raffle.totalTickets,
+      date: raffle.date,
     );
   }
 

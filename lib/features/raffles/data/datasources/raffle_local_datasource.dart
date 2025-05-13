@@ -106,13 +106,22 @@ class RaffleLocalDatasource {
     String? buyerContact,
   }) async {
     final db = await database;
+    final Map<String, dynamic> values = {
+      'status': status,
+    };
+    
+    // Only include buyer fields if status is not 'available'
+    if (status != 'available') {
+      values['buyer_name'] = buyerName;
+      values['buyer_contact'] = buyerContact;
+    } else {
+      values['buyer_name'] = null;
+      values['buyer_contact'] = null;
+    }
+    
     await db.update(
       'tickets',
-      {
-        'status': status,
-        'buyer_name': buyerName,
-        'buyer_contact': buyerContact,
-      },
+      values,
       where: 'id = ?',
       whereArgs: [ticketId],
     );
