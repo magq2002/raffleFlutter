@@ -9,8 +9,9 @@ class Raffle {
   final String status;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final DateTime date;
   final String? imagePath;
-  final List<Ticket>? tickets; // ✅ Agregado
+  final List<Ticket>? tickets;
 
   Raffle({
     this.id,
@@ -21,6 +22,7 @@ class Raffle {
     required this.status,
     required this.createdAt,
     required this.updatedAt,
+    required this.date,
     this.imagePath,
     this.tickets,
   });
@@ -34,6 +36,7 @@ class Raffle {
     String? status,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? date,
     String? imagePath,
     List<Ticket>? tickets,
   }) {
@@ -46,6 +49,7 @@ class Raffle {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      date: date ?? this.date,
       imagePath: imagePath ?? this.imagePath,
       tickets: tickets ?? this.tickets,
     );

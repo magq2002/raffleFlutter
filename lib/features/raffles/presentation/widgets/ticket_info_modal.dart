@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:raffle/features/raffles/domain/entities/ticket.dart';
+import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'ticket_export_widget.dart';
 
 class TicketInfoModal extends StatefulWidget {
   const TicketInfoModal({
     Key? key,
     required this.ticket,
+    required this.raffle,
     required this.onClose,
     required this.onEdit,
   }) : super(key: key);
   final Ticket? ticket;
+  final Raffle raffle;
   final VoidCallback onClose;
   final VoidCallback onEdit;
 
-  @override
   @override
   State<TicketInfoModal> createState() => _TicketInfoModalState();
 }
@@ -53,7 +55,10 @@ class _TicketInfoModalState extends State<TicketInfoModal> {
               ),
               const SizedBox(height: 12),
               // Widget de exportación (vista previa con QR, número, estado...)
-              TicketExportWidget(ticket: widget.ticket!),
+              TicketExportWidget(
+                ticket: widget.ticket!,
+                raffle: widget.raffle,
+              ),
               const SizedBox(height: 12),
               // Acciones adicionales: Editar
               Row(

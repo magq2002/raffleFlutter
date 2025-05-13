@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_bloc.dart';
 import 'package:raffle/features/raffles/presentation/bloc/raffle_event.dart';
+import '../../../../core/theme/app_colors.dart';
 
 class RaffleCreatePage extends StatefulWidget {
   const RaffleCreatePage({super.key});
@@ -20,7 +21,9 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
   final _priceController = TextEditingController();
   final _totalTicketsController = TextEditingController();
 
+  DateTime? _drawDate;
   File? _selectedImage;
+
 
   @override
   void dispose() {
@@ -48,6 +51,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
               lotteryNumber: _lotteryNumberController.text.trim(),
               price: double.parse(_priceController.text.trim()),
               totalTickets: int.parse(_totalTicketsController.text.trim()),
+              drawDate: _drawDate!,
               imagePath: _selectedImage?.path,
             ),
           );
@@ -123,6 +127,26 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                     },
                   ),
                   const SizedBox(height: 20),
+                  const Text('Fecha del sorteo',
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 8),
+                  ElevatedButton.icon(
+                    onPressed: _pickDate,
+                    icon: const Icon(Icons.date_range),
+                    label: Text(_drawDate == null
+                        ? 'Seleccionar fecha'
+                        : '${_drawDate!.toLocal()}'.split(' ')[0]),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.black87,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   TextButton.icon(
                     onPressed: _pickImage,
                     icon: const Icon(Icons.image),
@@ -184,5 +208,20 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
         ),
       ),
     );
+  }
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 5),
+    );
+    if (picked != null) {
+      setState(() {
+        _drawDate = picked;
+      });
+    }
   }
 }

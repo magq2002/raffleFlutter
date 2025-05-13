@@ -11,6 +11,7 @@ class RaffleModel extends Raffle {
     required String status,
     required DateTime createdAt,
     required DateTime updatedAt,
+    required DateTime date,
     String? imagePath,
     List<Ticket>? tickets,
   }) : super(
@@ -22,6 +23,7 @@ class RaffleModel extends Raffle {
           status: status,
           createdAt: createdAt,
           updatedAt: updatedAt,
+          date: date,
           imagePath: imagePath,
           tickets: tickets,
         );
@@ -36,6 +38,7 @@ class RaffleModel extends Raffle {
       status: map['status'],
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
+      date: DateTime.parse(map['date']),
       imagePath: map['image_path'],
     );
   }
@@ -50,6 +53,7 @@ class RaffleModel extends Raffle {
       'status': status,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'date': date.toIso8601String(),
       'image_path': imagePath,
     };
   }
@@ -64,6 +68,7 @@ class RaffleModel extends Raffle {
       status: raffle.status,
       createdAt: raffle.createdAt,
       updatedAt: raffle.updatedAt,
+      date: raffle.date,
       imagePath: raffle.imagePath,
       tickets: raffle.tickets,
     );
@@ -79,6 +84,7 @@ class RaffleModel extends Raffle {
       status: status,
       createdAt: createdAt,
       updatedAt: updatedAt,
+      date: date,
       imagePath: imagePath,
       tickets: tickets,
     );
