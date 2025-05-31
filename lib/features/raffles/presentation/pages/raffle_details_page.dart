@@ -13,6 +13,7 @@ import 'package:raffle/features/raffles/presentation/widgets/ticket_modal.dart';
 import 'package:raffle/features/raffles/presentation/widgets/ticket_grid.dart';
 import 'package:raffle/features/raffles/presentation/widgets/financial_summary.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_edit_page.dart';
+import 'package:raffle/features/raffles/presentation/pages/raffle_share_page.dart';
 import 'dart:io';
 
 class RaffleDetailsPage extends StatefulWidget {
@@ -28,6 +29,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   bool showStatusModal = false;
   bool showDeleteConfirm = false;
   Raffle? raffle;
+  int currentPage = 0;
 
   @override
   void initState() {
@@ -94,6 +96,21 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
     );
   }
 
+  void _openShareModal() {
+    if (raffle == null) return;
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => RaffleSharePage(
+          raffle: raffle!,
+          tickets: (context.read<RaffleDetailsBloc>().state as RaffleDetailsLoaded).tickets,
+          currentPage: currentPage,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,7 +121,11 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
-          if (raffle?.status != 'expired')
+          if (raffle?.status != 'expired') ...[
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: _openShareModal,
+            ),
             IconButton(
               icon: const Icon(Icons.edit),
               onPressed: () async {
@@ -125,6 +146,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                 }
               },
             ),
+          ],
           IconButton(
             icon: const Icon(Icons.sync_alt),
             onPressed: () => setState(() => showStatusModal = true),
@@ -207,6 +229,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                               raffle: raffle!,
                               onTap: _openTicketInfoModal,
                               showRandomButton: raffle!.status == 'active',
+                              onPageChanged: (page) => setState(() => currentPage = page),
                             ),
                           ],
                         ),

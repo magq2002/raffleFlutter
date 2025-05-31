@@ -12,6 +12,7 @@ class TicketGrid extends StatefulWidget {
   final Function(Ticket) onTap;
   final Raffle raffle;
   final bool showRandomButton;
+  final Function(int)? onPageChanged;
 
   const TicketGrid({
     super.key,
@@ -19,6 +20,7 @@ class TicketGrid extends StatefulWidget {
     required this.onTap,
     required this.raffle,
     this.showRandomButton = false,
+    this.onPageChanged,
   });
 
   @override
@@ -34,6 +36,11 @@ class _TicketGridState extends State<TicketGrid> {
     final start = _currentPage * itemsPerPage;
     final end = math.min(start + itemsPerPage, widget.tickets.length);
     return widget.tickets.sublist(start, end);
+  }
+
+  void _onPageChanged(int page) {
+    setState(() => _currentPage = page);
+    widget.onPageChanged?.call(page);
   }
 
   String _formatNumber(int number) {
@@ -184,7 +191,7 @@ class _TicketGridState extends State<TicketGrid> {
                       if (!isSmallScreen)
                         IconButton(
                           onPressed: _currentPage > 0
-                              ? () => setState(() => _currentPage = 0)
+                              ? () => _onPageChanged(0)
                               : null,
                           icon: const Icon(Icons.first_page),
                           padding: EdgeInsets.zero,
@@ -195,7 +202,7 @@ class _TicketGridState extends State<TicketGrid> {
                         ),
                       IconButton(
                         onPressed: _currentPage > 0
-                            ? () => setState(() => _currentPage--)
+                            ? () => _onPageChanged(_currentPage - 1)
                             : null,
                         icon: const Icon(Icons.chevron_left),
                         padding: EdgeInsets.zero,
@@ -232,7 +239,7 @@ class _TicketGridState extends State<TicketGrid> {
                             }),
                             onChanged: (value) {
                               if (value != null) {
-                                setState(() => _currentPage = value);
+                                _onPageChanged(value);
                               }
                             },
                           ),
@@ -240,7 +247,7 @@ class _TicketGridState extends State<TicketGrid> {
                       ),
                       IconButton(
                         onPressed: _currentPage < totalPages - 1
-                            ? () => setState(() => _currentPage++)
+                            ? () => _onPageChanged(_currentPage + 1)
                             : null,
                         icon: const Icon(Icons.chevron_right),
                         padding: EdgeInsets.zero,
@@ -252,7 +259,7 @@ class _TicketGridState extends State<TicketGrid> {
                       if (!isSmallScreen)
                         IconButton(
                           onPressed: _currentPage < totalPages - 1
-                              ? () => setState(() => _currentPage = totalPages - 1)
+                              ? () => _onPageChanged(totalPages - 1)
                               : null,
                           icon: const Icon(Icons.last_page),
                           padding: EdgeInsets.zero,
@@ -299,7 +306,7 @@ class _TicketGridState extends State<TicketGrid> {
             // Ajustar el número de columnas según la cantidad de dígitos
             final crossAxisCount = currentRaffle.gameType == 'lottery' 
                 ? (currentRaffle.digitCount >= 4 ? 5 : 10)
-                : 5;
+                : 10;
             
             return GridView.builder(
               shrinkWrap: true,
