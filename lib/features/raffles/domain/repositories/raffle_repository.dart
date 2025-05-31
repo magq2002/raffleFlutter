@@ -9,4 +9,5 @@ abstract class RaffleRepository {
   Future<void> updateTicket(Ticket ticket);
   Future<void> updateRaffleStatus(int raffleId, String newStatus);
   Future<void> deleteRaffleAndTickets(int raffleId);
+  Future<void> updateRaffle(Raffle raffle);
 }

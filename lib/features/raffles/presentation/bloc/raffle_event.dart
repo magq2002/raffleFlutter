@@ -62,3 +62,31 @@ class UpdateRaffleStatusEvent extends RaffleEvent {
   @override
   List<Object?> get props => [raffleId, newStatus];
 }
+
+class UpdateRaffle extends RaffleEvent {
+  final int raffleId;
+  final String name;
+  final String lotteryNumber;
+  final double price;
+  final DateTime drawDate;
+  final String? imagePath;
+
+  const UpdateRaffle({
+    required this.raffleId,
+    required this.name,
+    required this.lotteryNumber,
+    required this.price,
+    required this.drawDate,
+    this.imagePath,
+  });
+
+  @override
+  List<Object?> get props => [
+        raffleId,
+        name,
+        lotteryNumber,
+        price,
+        drawDate,
+        imagePath,
+      ];
+}

@@ -76,6 +76,29 @@ class RaffleBloc extends Bloc<RaffleEvent, RaffleState> {
       }
     });
 
+    on<UpdateRaffle>((event, emit) async {
+      try {
+        final currentState = state;
+        if (currentState is RaffleLoaded) {
+          final raffle = currentState.raffles.firstWhere((r) => r.id == event.raffleId);
+          
+          final updatedRaffle = raffle.copyWith(
+            name: event.name,
+            lotteryNumber: event.lotteryNumber,
+            price: event.price,
+            date: event.drawDate,
+            imagePath: event.imagePath,
+            updatedAt: DateTime.now(),
+          );
+
+          await repository.updateRaffle(updatedRaffle);
+          add(LoadRaffles());
+        }
+      } catch (e) {
+        emit(RaffleError(message: e.toString()));
+      }
+    });
+
     on<UpdateTicketEvent>((event, emit) async {
       try {
         await repository.updateTicket(event.ticket);

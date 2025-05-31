@@ -5,11 +5,14 @@ import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_bloc.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_event.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_state.dart';
+import 'package:raffle/features/raffles/presentation/bloc/raffle_bloc.dart';
+import 'package:raffle/features/raffles/presentation/bloc/raffle_event.dart' as raffle_events;
 import 'package:raffle/features/raffles/presentation/widgets/status_modal.dart';
 import 'package:raffle/features/raffles/presentation/widgets/ticket_info_modal.dart';
 import 'package:raffle/features/raffles/presentation/widgets/ticket_modal.dart';
 import 'package:raffle/features/raffles/presentation/widgets/ticket_grid.dart';
 import 'package:raffle/features/raffles/presentation/widgets/financial_summary.dart';
+import 'package:raffle/features/raffles/presentation/pages/raffle_edit_page.dart';
 
 class RaffleDetailsPage extends StatefulWidget {
   final int raffleId;
@@ -93,6 +96,40 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(raffle?.name ?? ''),
+        centerTitle: true,
+        backgroundColor: Colors.deepPurple,
+        elevation: 4,
+        actions: [
+          if (raffle?.status != 'expired')
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () async {
+                await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<RaffleBloc>(),
+                      child: RaffleEditPage(raffle: raffle!),
+                    ),
+                  ),
+                );
+                // Recargar los detalles después de editar
+                if (mounted) {
+                  context.read<RaffleDetailsBloc>().add(
+                        LoadRaffleDetails(widget.raffleId),
+                      );
+                }
+              },
+            ),
+          IconButton(
+            icon: const Icon(Icons.sync_alt),
+            onPressed: () => setState(() => showStatusModal = true),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: BlocBuilder<RaffleDetailsBloc, RaffleDetailsState>(
         builder: (context, state) {
           if (state is RaffleDetailsLoading) {
@@ -105,45 +142,23 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
 
             return Stack(
               children: [
-                CustomScrollView(
-                  slivers: [
-                    SliverAppBar(
-                      pinned: true,
-                      expandedHeight: 160,
-                      flexibleSpace: FlexibleSpaceBar(
-                        title: Text(raffle!.name),
-                        background: Container(color: Colors.deepPurple),
-                      ),
-                      actions: [
-                        IconButton(
-                          icon: const Icon(Icons.sync_alt),
-                          onPressed: () =>
-                              setState(() => showStatusModal = true),
+                SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        FinancialSummary(
+                          raffle: raffle!,
+                          tickets: tickets,
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(height: 16),
+                        TicketGrid(
+                          tickets: tickets,
+                          onTap: _openTicketInfoModal,
+                        ),
                       ],
                     ),
-                    SliverToBoxAdapter(
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            children: [
-                              FinancialSummary(
-                                raffle: raffle!,
-                                tickets: tickets,
-                              ),
-                              const SizedBox(height: 16),
-                              TicketGrid(
-                                tickets: tickets,
-                                onTap: _openTicketInfoModal,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
                 if (raffle!.status == 'expired')
                   Positioned(

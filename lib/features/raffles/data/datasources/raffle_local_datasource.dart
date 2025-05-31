@@ -141,6 +141,32 @@ class RaffleLocalDatasource {
     );
   }
 
+  Future<void> updateRaffle({
+    required int raffleId,
+    required String name,
+    required String lotteryNumber,
+    required double price,
+    required DateTime date,
+    String? imagePath,
+  }) async {
+    final db = await database;
+    final now = DateTime.now().toIso8601String();
+    
+    await db.update(
+      'raffles',
+      {
+        'name': name,
+        'lottery_number': lotteryNumber,
+        'price': price,
+        'date': date.toIso8601String(),
+        'image_path': imagePath,
+        'updated_at': now,
+      },
+      where: 'id = ?',
+      whereArgs: [raffleId],
+    );
+  }
+
   Future<void> deleteRaffle(int raffleId) async {
     final db = await database;
     await db.delete('raffles', where: 'id = ?', whereArgs: [raffleId]);
