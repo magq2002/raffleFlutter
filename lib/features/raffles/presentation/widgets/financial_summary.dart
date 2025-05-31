@@ -86,7 +86,7 @@ class FinancialSummary extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Text(
-                  '${raffle.totalTickets} tickets',
+                  '${raffle.totalTickets} Tickets',
                   style: const TextStyle(
                     color: Colors.white60,
                     fontSize: 12,
@@ -105,22 +105,55 @@ class FinancialSummary extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 18),
-          _buildProgressBar(percentSold, percentReserved, percentAvailable),
+          Row(
+            children: [
+              Expanded(
+                child: _buildProgressBar(percentSold, percentReserved, percentAvailable),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  percentFormat.format(percentSold + percentReserved),
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Progreso: ${percentFormat.format(percentSold + percentReserved)}',
+                'Vendidos: ${currencyFormat.format(collected + pending)}',
                 style: const TextStyle(color: Colors.white60, fontSize: 12),
               ),
-              Text(
-                'Total: ${currencyFormat.format(total)}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 14,
-                ),
+              Row(
+                children: [
+                  Text(
+                    'Meta: ',
+                    style: const TextStyle(
+                      color: Colors.white60,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    currencyFormat.format(total),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
