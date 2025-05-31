@@ -130,12 +130,12 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
                 TextFormField(
                   controller: _lotteryNumberController,
                   decoration: const InputDecoration(
-                    labelText: 'Número de Lotería',
-                    prefixIcon: Icon(Icons.numbers),
+                    labelText: 'Nombre de Lotería',
+                    prefixIcon: Icon(Icons.description),
                   ),
                   validator: (value) {
                     if (value?.isEmpty ?? true) {
-                      return 'Por favor ingresa el número de lotería';
+                      return 'Por favor ingresa el nombre de lotería';
                     }
                     return null;
                   },

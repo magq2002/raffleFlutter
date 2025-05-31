@@ -98,7 +98,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                     ),
                     _buildTextField(
                       controller: _lotteryNumberController,
-                      label: 'Número de Lotería',
+                      label: 'Nombre de Lotería',
                       icon: Icons.confirmation_number,
                       validator: (value) => value == null || value.isEmpty
                           ? 'Campo obligatorio'
