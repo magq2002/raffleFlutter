@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
+import 'package:gal/gal.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/ticket.dart';
@@ -39,24 +40,26 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final pngBytes = byteData!.buffer.asUint8List();
 
-      final tempDir = await getTemporaryDirectory();
-      final file = await File('${tempDir.path}/ticket.png').create();
-      await file.writeAsBytes(pngBytes);
-
       if (share) {
+        final tempDir = await getTemporaryDirectory();
+        final file = await File('${tempDir.path}/ticket.png').create();
+        await file.writeAsBytes(pngBytes);
         await Share.shareXFiles([XFile(file.path)],
             text: '¡Gracias por participar!');
       } else {
-        if (await Permission.storage.request().isGranted) {
-          final directory = await getExternalStorageDirectory();
-          final path = '${directory!.path}/ticket_${widget.ticket.number}.png';
-          final saved = await File(path).writeAsBytes(pngBytes);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Imagen guardada: ${saved.path}')),
-          );
+        final hasAccess = await Gal.hasAccess(toAlbum: true);
+        if (!hasAccess) {
+           await Gal.requestAccess(toAlbum: true);
+        }
+
+        if (await Gal.hasAccess(toAlbum: true)){
+           await Gal.putImageBytes(pngBytes, album: 'RaffleTickets');
+             ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Imagen guardada en la galería')),
+            );
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Permiso de almacenamiento denegado')),
+           ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Permiso de galería denegado')),
           );
         }
       }
