@@ -2,11 +2,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/repositories/raffle_repository.dart';
 import '../../../data/models/raffle_model.dart';
 import '../../../data/models/ticket_model.dart';
+import '../../../data/datasources/raffle_local_datasource.dart';
 import 'raffle_details_event.dart';
 import 'raffle_details_state.dart';
 
 class RaffleDetailsBloc extends Bloc<RaffleDetailsEvent, RaffleDetailsState> {
   final RaffleRepository repository;
+  final RaffleLocalDatasource localDatasource = RaffleLocalDatasource.instance;
 
   RaffleDetailsBloc(this.repository) : super(RaffleDetailsInitial()) {
     on<LoadRaffleDetails>((event, emit) async {
@@ -116,6 +118,15 @@ class RaffleDetailsBloc extends Bloc<RaffleDetailsEvent, RaffleDetailsState> {
       } catch (e) {
         print("hola 3");
 
+        emit(RaffleDetailsError(e.toString()));
+      }
+    });
+
+    on<SetWinningNumber>((event, emit) async {
+      try {
+        await localDatasource.updateWinningNumber(event.raffleId, event.winningNumber);
+        add(LoadRaffleDetails(event.raffleId));
+      } catch (e) {
         emit(RaffleDetailsError(e.toString()));
       }
     });

@@ -38,15 +38,27 @@ class RaffleBloc extends Bloc<RaffleEvent, RaffleState> {
           status: 'active',
           createdAt: DateTime.now(),
           updatedAt: DateTime.now(),
-          imagePath: event.imagePath,
           date: event.drawDate,
+          imagePath: event.imagePath,
+          gameType: event.gameType,
+          digitCount: event.digitCount,
         );
 
+        // Generar tickets según el tipo de juego
         final tickets = List.generate(event.totalTickets, (i) {
+          String number;
+          if (event.gameType == 'lottery') {
+            // Para lotería, formatea el número con ceros a la izquierda
+            number = i.toString().padLeft(event.digitCount, '0');
+          } else {
+            // Para sorteo en app, usa números secuenciales
+            number = (i + 1).toString();
+          }
+          
           return Ticket(
             id: null,
             raffleId: 0, // se asignará luego en el repo
-            number: i + 1,
+            number: int.parse(number),
             status: 'available',
           );
         });

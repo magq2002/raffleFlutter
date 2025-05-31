@@ -39,7 +39,10 @@ class RaffleLocalDatasource {
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
         date TEXT NOT NULL,
-        image_path TEXT
+        image_path TEXT,
+        game_type TEXT NOT NULL,
+        digit_count INTEGER NOT NULL,
+        winning_number TEXT
       )
     ''');
 
@@ -63,6 +66,8 @@ class RaffleLocalDatasource {
     required int totalTickets,
     required DateTime date,
     String? imagePath,
+    required String gameType,
+    required int digitCount,
   }) async {
     final db = await database;
     final now = DateTime.now().toIso8601String();
@@ -77,6 +82,8 @@ class RaffleLocalDatasource {
       'updated_at': now,
       'date': date.toIso8601String(),
       'image_path': imagePath,
+      'game_type': gameType,
+      'digit_count': digitCount,
     });
   }
 
@@ -141,6 +148,20 @@ class RaffleLocalDatasource {
     );
   }
 
+  Future<void> updateWinningNumber(int raffleId, String winningNumber) async {
+    final db = await database;
+    final now = DateTime.now().toIso8601String();
+    await db.update(
+      'raffles',
+      {
+        'winning_number': winningNumber,
+        'updated_at': now,
+      },
+      where: 'id = ?',
+      whereArgs: [raffleId],
+    );
+  }
+
   Future<void> updateRaffle({
     required int raffleId,
     required String name,
@@ -148,20 +169,27 @@ class RaffleLocalDatasource {
     required double price,
     required DateTime date,
     String? imagePath,
+    String? gameType,
+    int? digitCount,
   }) async {
     final db = await database;
     final now = DateTime.now().toIso8601String();
     
+    final Map<String, dynamic> values = {
+      'name': name,
+      'lottery_number': lotteryNumber,
+      'price': price,
+      'date': date.toIso8601String(),
+      'image_path': imagePath,
+      'updated_at': now,
+    };
+
+    if (gameType != null) values['game_type'] = gameType;
+    if (digitCount != null) values['digit_count'] = digitCount;
+    
     await db.update(
       'raffles',
-      {
-        'name': name,
-        'lottery_number': lotteryNumber,
-        'price': price,
-        'date': date.toIso8601String(),
-        'image_path': imagePath,
-        'updated_at': now,
-      },
+      values,
       where: 'id = ?',
       whereArgs: [raffleId],
     );
@@ -208,6 +236,8 @@ class RaffleLocalDatasource {
       totalTickets: model.totalTickets,
       date: model.date,
       imagePath: model.imagePath,
+      gameType: model.gameType,
+      digitCount: model.digitCount,
     );
   }
 }

@@ -202,10 +202,11 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                               raffle: raffle!,
                               tickets: tickets,
                             ),
-                            const SizedBox(height: 16),
                             TicketGrid(
                               tickets: tickets,
+                              raffle: raffle!,
                               onTap: _openTicketInfoModal,
+                              showRandomButton: raffle!.status == 'active',
                             ),
                           ],
                         ),
