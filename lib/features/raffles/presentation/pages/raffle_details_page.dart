@@ -13,6 +13,7 @@ import 'package:raffle/features/raffles/presentation/widgets/ticket_modal.dart';
 import 'package:raffle/features/raffles/presentation/widgets/ticket_grid.dart';
 import 'package:raffle/features/raffles/presentation/widgets/financial_summary.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_edit_page.dart';
+import 'dart:io';
 
 class RaffleDetailsPage extends StatefulWidget {
   final int raffleId;
@@ -96,11 +97,12 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(raffle?.name ?? ''),
         centerTitle: true,
-        backgroundColor: Colors.deepPurple,
-        elevation: 4,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           if (raffle?.status != 'expired')
             IconButton(
@@ -143,21 +145,72 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
             return Stack(
               children: [
                 SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        FinancialSummary(
-                          raffle: raffle!,
-                          tickets: tickets,
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 280,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.deepPurple,
+                          image: raffle!.imagePath != null
+                              ? DecorationImage(
+                                  image: FileImage(File(raffle!.imagePath!)),
+                                  fit: BoxFit.cover,
+                                  alignment: Alignment.center,
+                                )
+                              : null,
                         ),
-                        const SizedBox(height: 16),
-                        TicketGrid(
-                          tickets: tickets,
-                          onTap: _openTicketInfoModal,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.4),
+                                Colors.black.withOpacity(0.1),
+                              ],
+                            ),
+                          ),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.all(20),
+                              child: Text(
+                                raffle!.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  shadows: [
+                                    Shadow(
+                                      offset: Offset(0, 2),
+                                      blurRadius: 4,
+                                      color: Colors.black38,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            FinancialSummary(
+                              raffle: raffle!,
+                              tickets: tickets,
+                            ),
+                            const SizedBox(height: 16),
+                            TicketGrid(
+                              tickets: tickets,
+                              onTap: _openTicketInfoModal,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 if (raffle!.status == 'expired')
