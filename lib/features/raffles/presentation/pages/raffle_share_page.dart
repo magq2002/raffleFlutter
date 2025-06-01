@@ -343,6 +343,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
       locale: 'es_MX',
     );
 
+    final dateFormat = DateFormat('dd/MM/yyyy', 'es');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Compartir Rifa'),
@@ -411,6 +413,70 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
+
+                    // Información de fecha y lotería
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      margin: const EdgeInsets.symmetric(horizontal: 20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          if (widget.raffle.gameType == 'lottery') ...[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.confirmation_number_outlined,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Lotería: ${widget.raffle.lotteryNumber}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.calendar_today,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Fecha: ${dateFormat.format(widget.raffle.date)}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Precio
                     if (showPrice)
                       Container(
