@@ -14,6 +14,8 @@ import 'package:raffle/features/raffles/presentation/widgets/ticket_grid.dart';
 import 'package:raffle/features/raffles/presentation/widgets/financial_summary.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_edit_page.dart';
 import 'package:raffle/features/raffles/presentation/pages/raffle_share_page.dart';
+import 'package:raffle/features/raffles/presentation/widgets/buyers_summary.dart';
+import 'package:raffle/features/raffles/presentation/pages/buyers_list_page.dart';
 import 'dart:io';
 
 class RaffleDetailsPage extends StatefulWidget {
@@ -223,6 +225,20 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                             FinancialSummary(
                               raffle: raffle!,
                               tickets: tickets,
+                            ),
+                            BuyersSummary(
+                              tickets: tickets,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => BuyersListPage(
+                                      raffle: raffle!,
+                                      tickets: tickets,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             TicketGrid(
                               tickets: tickets,
