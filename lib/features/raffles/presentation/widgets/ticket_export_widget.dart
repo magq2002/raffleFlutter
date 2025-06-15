@@ -32,6 +32,8 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
   bool isProcessing = false;
 
   Future<void> _exportTicket({required bool share}) async {
+    if (isProcessing) return; // Prevenir múltiples ejecuciones
+    
     try {
       setState(() => isProcessing = true);
       final boundary = repaintKey.currentContext!.findRenderObject()
@@ -44,8 +46,19 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
         final tempDir = await getTemporaryDirectory();
         final file = await File('${tempDir.path}/ticket.png').create();
         await file.writeAsBytes(pngBytes);
+        
+        // Para iOS: Resetear el estado inmediatamente antes de compartir
+        if (Platform.isIOS) {
+          setState(() => isProcessing = false);
+        }
+        
         await Share.shareXFiles([XFile(file.path)],
             text: '¡Gracias por participar!');
+            
+        // Para Android: Resetear después de compartir
+        if (!Platform.isIOS && mounted) {
+          setState(() => isProcessing = false);
+        }
       } else {
         final hasAccess = await Gal.hasAccess(toAlbum: true);
         if (!hasAccess) {
@@ -54,21 +67,30 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
 
         if (await Gal.hasAccess(toAlbum: true)){
            await Gal.putImageBytes(pngBytes, album: 'RaffleTickets');
+           if (mounted) {
              ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Imagen guardada en la galería')),
-            );
+               const SnackBar(content: Text('Imagen guardada en la galería')),
+             );
+           }
         } else {
-           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Permiso de galería denegado')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Permiso de galería denegado')),
+            );
+          }
+        }
+        
+        if (mounted) {
+          setState(() => isProcessing = false);
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al exportar: $e')),
-      );
-    } finally {
-      setState(() => isProcessing = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al exportar: $e')),
+        );
+        setState(() => isProcessing = false);
+      }
     }
   }
 
@@ -237,7 +259,7 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
           )
         else
           const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
+            padding: EdgeInsets.symmetric(vertical: 5),
             child: Center(child: CircularProgressIndicator()),
           ),
       ],

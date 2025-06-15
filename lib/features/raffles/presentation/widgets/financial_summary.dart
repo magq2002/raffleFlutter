@@ -19,7 +19,7 @@ class FinancialSummary extends StatelessWidget {
         decimalDigits: 2,
         locale: 'es',
       );
-  
+
   NumberFormat get percentFormat => NumberFormat.decimalPercentPattern(
         decimalDigits: 1,
         locale: 'es',
@@ -80,7 +80,8 @@ class FinancialSummary extends StatelessWidget {
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF383838),
                   borderRadius: BorderRadius.circular(30),
@@ -95,20 +96,44 @@ class FinancialSummary extends StatelessWidget {
               ),
             ],
           ),
+          Row(
+            children: [
+              // ignore: prefer_const_constructors
+              Text(
+                'Meta De Ventas: ',
+                style: const TextStyle(
+                  color: Colors.white60,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                currencyFormat.format(total),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 18),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _summaryBox('Cobrado', collected, percentSold, const Color(0xFF00E676)),
-              _summaryBox('Reservado', pending, percentReserved, const Color(0xFFFFD54F)),
-              _summaryBox('Pendiente', remaining, percentAvailable, const Color(0xFF9E9E9E)),
+              _summaryBox(
+                  'Cobrado', collected, percentSold, const Color(0xFF00E676)),
+              _summaryBox('Reservado', pending, percentReserved,
+                  const Color(0xFFFFD54F)),
+              _summaryBox('Pendiente', remaining, percentAvailable,
+                  const Color(0xFF9E9E9E)),
             ],
           ),
           const SizedBox(height: 18),
           Row(
             children: [
               Expanded(
-                child: _buildProgressBar(percentSold, percentReserved, percentAvailable),
+                child: _buildProgressBar(
+                    percentSold, percentReserved, percentAvailable),
               ),
               const SizedBox(width: 8),
               Container(
@@ -133,27 +158,8 @@ class FinancialSummary extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Vendidos: ${currencyFormat.format(collected + pending)}',
+                'Total ventas: ${currencyFormat.format(collected + pending)}',
                 style: const TextStyle(color: Colors.white60, fontSize: 12),
-              ),
-              Row(
-                children: [
-                  Text(
-                    'Meta: ',
-                    style: const TextStyle(
-                      color: Colors.white60,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    currencyFormat.format(total),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
               ),
             ],
           ),
@@ -230,7 +236,8 @@ class FinancialSummary extends StatelessWidget {
         children: [
           _progressSegment(percentSold, const Color(0xFF00E676)),
           _progressSegment(percentReserved, const Color(0xFFFFD54F)),
-          _progressSegment(percentAvailable, const Color(0xFF9E9E9E).withAlpha(77)),
+          _progressSegment(
+              percentAvailable, const Color(0xFF9E9E9E).withAlpha(77)),
         ],
       ),
     );
@@ -240,7 +247,8 @@ class FinancialSummary extends StatelessWidget {
     if (percent <= 0) return const SizedBox.shrink();
 
     return Expanded(
-      flex: (percent * 1000).round(), // Multiplicamos por 1000 para mejor precisión
+      flex: (percent * 1000)
+          .round(), // Multiplicamos por 1000 para mejor precisión
       child: Container(
         decoration: BoxDecoration(
           color: color,

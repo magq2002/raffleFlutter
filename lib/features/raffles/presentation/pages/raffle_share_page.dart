@@ -67,7 +67,7 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
         maxWidth: 1920, // Limitar el tamaño para mejor rendimiento
         maxHeight: 1920,
       );
-      
+
       if (image != null) {
         setState(() {
           backgroundImage = File(image.path);
@@ -86,7 +86,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
   Future<void> _exportImage({required bool share}) async {
     try {
       setState(() => isProcessing = true);
-      final boundary = repaintKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      final boundary = repaintKey.currentContext!.findRenderObject()
+          as RenderRepaintBoundary;
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       final pngBytes = byteData!.buffer.asUint8List();
@@ -148,7 +149,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: selectedBackgroundColor,
-            onColorChanged: (color) => setState(() => selectedBackgroundColor = color),
+            onColorChanged: (color) =>
+                setState(() => selectedBackgroundColor = color),
             pickerAreaHeightPercent: 0.8,
             enableAlpha: false,
             displayThumbColor: true,
@@ -175,9 +177,9 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 16),
+        const SizedBox(height: 5),
         Container(
-          height: 24,
+          height: 12,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: Colors.white.withOpacity(0.1),
@@ -191,7 +193,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                     color: Colors.red.withOpacity(0.8),
                     borderRadius: BorderRadius.horizontal(
                       left: const Radius.circular(12),
-                      right: Radius.circular(reserved == 0 && available == 0 ? 12 : 0),
+                      right: Radius.circular(
+                          reserved == 0 && available == 0 ? 12 : 0),
                     ),
                   ),
                 ),
@@ -277,46 +280,103 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
     final startIndex = widget.currentPage * 100;
     final endIndex = math.min(startIndex + 100, widget.tickets.length);
     final pageTickets = widget.tickets.sublist(startIndex, endIndex);
-    final crossAxisCount = math.min(10, math.sqrt(pageTickets.length).ceil());
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
-        childAspectRatio: 1,
-      ),
-      itemCount: pageTickets.length,
-      itemBuilder: (context, index) {
-        final ticket = pageTickets[index];
-        return Container(
-          decoration: BoxDecoration(
-            color: _getTicketColor(ticket.status).withOpacity(gridOpacity),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: Colors.white.withOpacity(0.2),
-              width: 1,
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Ancho disponible descontando el padding horizontal
+        final availableWidth = constraints.maxWidth;
+
+        // Encontrar el número más largo para ajustar el tamaño
+        final maxDigits = pageTickets.fold<int>(
+            0, (max, ticket) => math.max(max, ticket.number.toString().length));
+
+        // Definir el ancho mínimo COMPACTO por ticket (solo lo necesario para el número)
+        double desiredTicketWidth;
+        double fontSize;
+
+        if (maxDigits <= 2) {
+          desiredTicketWidth = 22; // Muy compacto para 1-2 dígitos
+          fontSize = 13;
+        } else if (maxDigits == 3) {
+          desiredTicketWidth = 28; // Compacto para 3 dígitos
+          fontSize = 11;
+        } else if (maxDigits == 4) {
+          desiredTicketWidth = 34; // Justo para 4 dígitos
+          fontSize = 10;
+        } else {
+          desiredTicketWidth = 40; // Mínimo para números muy largos
+          fontSize = 9;
+        }
+
+        // Espaciado mínimo entre tickets
+        const spacing = 3.0;
+
+        // Calcular cuántas columnas caben en el ancho disponible
+        int crossAxisCount =
+            ((availableWidth + spacing) / (desiredTicketWidth + spacing))
+                .floor();
+
+        // Establecer límites para que no queden demasiado pequeños o grandes
+        crossAxisCount = math.max(crossAxisCount, 8); // Mínimo 8 columnas
+        crossAxisCount = math.min(crossAxisCount, 20); // Máximo 20 columnas
+
+        // Si tenemos pocos tickets, ajustar las columnas
+        if (pageTickets.length < crossAxisCount) {
+          crossAxisCount = math.max(pageTickets.length, 8);
+        }
+
+        // Calcular el ancho real que tendrá cada ticket
+        final actualTicketWidth =
+            (availableWidth - (crossAxisCount - 1) * spacing) / crossAxisCount;
+
+        // Ajustar el tamaño de fuente pero mantenerlo legible
+        final adjustedFontSize = math.max(
+            fontSize * (actualTicketWidth / desiredTicketWidth),
+            8.0 // Tamaño mínimo de fuente para legibilidad
+            );
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: spacing,
+            mainAxisSpacing: spacing,
+            childAspectRatio: 1, // Mantener cuadrados compactos
           ),
-          child: Center(
-            child: Text(
-              '${ticket.number}',
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: ticket.number.toString().length > 2 ? 12 : 14,
+          itemCount: pageTickets.length,
+          itemBuilder: (context, index) {
+            final ticket = pageTickets[index];
+            return Container(
+              decoration: BoxDecoration(
+                color: _getTicketColor(ticket.status).withOpacity(gridOpacity),
+                borderRadius: BorderRadius.circular(6), // Bordes más pequeños
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 0.5, // Borde más delgado
+                ),
               ),
-            ),
-          ),
+              child: Center(
+                child: Text(
+                  '${ticket.number}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: adjustedFontSize,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            );
+          },
         );
       },
     );
   }
 
   Widget _buildLogoContainer() {
-    if (!showLogo || widget.raffle.imagePath == null) return const SizedBox.shrink();
+    if (!showLogo || widget.raffle.imagePath == null)
+      return const SizedBox.shrink();
 
     return Container(
       width: logoSize,
@@ -363,7 +423,7 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
             ),
           ] else
             const Padding(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.only(right: 16),
               child: CircularProgressIndicator(),
             ),
         ],
@@ -392,7 +452,10 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                   children: [
                     const SizedBox(height: 20),
                     _buildLogoContainer(),
-                    SizedBox(height: showLogo && widget.raffle.imagePath != null ? 16 : 0),
+                    SizedBox(
+                        height: showLogo && widget.raffle.imagePath != null
+                            ? 16
+                            : 0),
                     // Título
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -580,7 +643,9 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                           ),
                           trailing: IconButton(
                             icon: const Icon(Icons.image),
-                            onPressed: useBackgroundImage ? _pickBackgroundImage : null,
+                            onPressed: useBackgroundImage
+                                ? _pickBackgroundImage
+                                : null,
                           ),
                         ),
                       ],
@@ -590,7 +655,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                     SwitchListTile(
                       title: const Text('Mostrar fecha y lotería'),
                       value: showDateAndLottery,
-                      onChanged: (value) => setState(() => showDateAndLottery = value),
+                      onChanged: (value) =>
+                          setState(() => showDateAndLottery = value),
                     ),
 
                     // Opciones de logo
@@ -611,7 +677,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                         SwitchListTile(
                           title: const Text('Logo redondeado'),
                           value: isLogoRounded,
-                          onChanged: (value) => setState(() => isLogoRounded = value),
+                          onChanged: (value) =>
+                              setState(() => isLogoRounded = value),
                         ),
                         ListTile(
                           title: const Text('Tamaño del logo'),
@@ -619,7 +686,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                             value: logoSize,
                             min: 60,
                             max: 140,
-                            onChanged: (value) => setState(() => logoSize = value),
+                            onChanged: (value) =>
+                                setState(() => logoSize = value),
                           ),
                         ),
                       ],
@@ -631,7 +699,9 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                       subtitle: Slider(
                         value: titleSize,
                         min: 18,
-                        max: widget.raffle.imagePath == null || !showLogo ? 32 : 28,
+                        max: widget.raffle.imagePath == null || !showLogo
+                            ? 32
+                            : 28,
                         onChanged: (value) => setState(() => titleSize = value),
                       ),
                     ),
@@ -643,7 +713,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                         value: gridOpacity,
                         min: 0.3,
                         max: 1.0,
-                        onChanged: (value) => setState(() => gridOpacity = value),
+                        onChanged: (value) =>
+                            setState(() => gridOpacity = value),
                       ),
                     ),
 
@@ -686,4 +757,4 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
         return Colors.green;
     }
   }
-} 
+}

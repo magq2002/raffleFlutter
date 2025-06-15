@@ -14,13 +14,6 @@ class RaffleBloc extends Bloc<RaffleEvent, RaffleState> {
       emit(RaffleLoading());
       try {
         final raffles = await repository.getAllRaffles();
-
-        // 👇 Añade este print para ver cuántas rifas y tickets hay
-        for (var raffle in raffles) {
-          print(
-              '📦 Rifa: ${raffle.name} - Tickets: ${raffle.tickets?.length ?? 0}');
-        }
-
         emit(RaffleLoaded(raffles: raffles));
       } catch (e) {
         emit(RaffleError(message: e.toString()));

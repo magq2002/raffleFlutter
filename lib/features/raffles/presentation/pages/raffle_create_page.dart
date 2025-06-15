@@ -90,7 +90,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                               children: [
                                 Icon(Icons.add_photo_alternate, size: 50),
                                 SizedBox(height: 8),
-                                Text('Toca para agregar una imagen'),
+                                Text('Toca para agregar una imagen', style: TextStyle(color: AppColors.textBlack)),
                               ],
                             )
                           : null,
@@ -246,7 +246,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                           TextFormField(
                             controller: _lotteryNumberController,
                             decoration: InputDecoration(
-                              labelText: 'Nombre del Sorteo',
+                              labelText: 'Nombre de la loteria',
                               prefixIcon: const Icon(Icons.confirmation_number),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(10),
@@ -254,7 +254,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Por favor ingresa el nombre del sorteo';
+                                return 'Por favor ingresa el nombre de la loteria';
                               }
                               return null;
                             },

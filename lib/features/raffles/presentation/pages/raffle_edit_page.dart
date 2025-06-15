@@ -27,6 +27,7 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
   late TextEditingController _priceController;
   late DateTime _drawDate;
   File? _selectedImage;
+  late String _gameType;
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
     _lotteryNumberController = TextEditingController(text: widget.raffle.lotteryNumber);
     _priceController = TextEditingController(text: widget.raffle.price.toString());
     _drawDate = widget.raffle.date;
+    _gameType = widget.raffle.gameType;
     if (widget.raffle.imagePath != null) {
       _selectedImage = File(widget.raffle.imagePath!);
     }
@@ -63,7 +65,7 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
             UpdateRaffle(
               raffleId: widget.raffle.id!,
               name: _nameController.text.trim(),
-              lotteryNumber: _lotteryNumberController.text.trim(),
+              lotteryNumber: _gameType == 'lottery' ? _lotteryNumberController.text.trim() : '',
               price: double.parse(_priceController.text.trim()),
               drawDate: _drawDate,
               imagePath: _selectedImage?.path,
@@ -113,6 +115,36 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
+                
+                // Información del tipo de rifa
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Theme.of(context).primaryColor.withOpacity(0.3),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _gameType == 'lottery' ? Icons.confirmation_number : Icons.casino,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Tipo de Rifa: ${_gameType == 'lottery' ? 'Lotería Nacional' : 'Sorteo en la App'}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
                 TextFormField(
                   controller: _nameController,
                   decoration: const InputDecoration(
@@ -127,20 +159,22 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _lotteryNumberController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre de Lotería',
-                    prefixIcon: Icon(Icons.description),
+                if (_gameType == 'lottery') ...[
+                  TextFormField(
+                    controller: _lotteryNumberController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre de Lotería',
+                      prefixIcon: Icon(Icons.description),
+                    ),
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return 'Por favor ingresa el nombre de lotería';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Por favor ingresa el nombre de lotería';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
+                  const SizedBox(height: 16),
+                ],
                 TextFormField(
                   controller: _priceController,
                   keyboardType: TextInputType.number,

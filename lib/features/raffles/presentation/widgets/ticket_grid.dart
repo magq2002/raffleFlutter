@@ -6,6 +6,7 @@ import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_event.dart';
 import 'package:raffle/features/raffles/presentation/bloc/details/raffle_details_state.dart';
 import 'dart:math' as math;
+import 'package:raffle/core/theme/app_colors.dart';
 
 class TicketGrid extends StatefulWidget {
   final List<Ticket> tickets;
@@ -53,28 +54,43 @@ class _TicketGridState extends State<TicketGrid> {
   Color _getTicketColor(String status) {
     switch (status) {
       case 'sold':
-        return Colors.red.shade100;
+        return AppColors.statusSold.withOpacity(0.3);
       case 'reserved':
-        return Colors.yellow.shade100;
+        return AppColors.statusReserved.withOpacity(0.3);
       case 'available':
-        return Colors.green.shade100;
+        return AppColors.statusAvailable.withOpacity(0.3);
       default:
-        return Colors.grey.shade200;
+        return AppColors.textSecondary.withOpacity(0.3);
+    }
+  }
+
+  Color _getTicketBorderColor(String status) {
+    switch (status) {
+      case 'sold':
+        return AppColors.statusSold;
+      case 'reserved':
+        return AppColors.statusReserved;
+      case 'available':
+        return AppColors.statusAvailable;
+      default:
+        return AppColors.textSecondary;
     }
   }
 
   void _selectRandomTicket(BuildContext context) {
-    final availableTickets = widget.tickets.where((t) => t.status == 'available').toList();
+    final availableTickets =
+        widget.tickets.where((t) => t.status == 'available').toList();
     if (availableTickets.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No hay números disponibles')),
       );
       return;
     }
-    
+
     final random = math.Random();
-    final selectedTicket = availableTickets[random.nextInt(availableTickets.length)];
-    
+    final selectedTicket =
+        availableTickets[random.nextInt(availableTickets.length)];
+
     // Mostrar diálogo de confirmación
     showDialog(
       context: context,
@@ -104,11 +120,11 @@ class _TicketGridState extends State<TicketGrid> {
             onPressed: () {
               Navigator.pop(context);
               context.read<RaffleDetailsBloc>().add(
-                SetWinningNumber(
-                  raffleId: widget.raffle.id!,
-                  winningNumber: _formatNumber(selectedTicket.number),
-                ),
-              );
+                    SetWinningNumber(
+                      raffleId: widget.raffle.id!,
+                      winningNumber: _formatNumber(selectedTicket.number),
+                    ),
+                  );
             },
             child: const Text('Confirmar'),
           ),
@@ -147,11 +163,11 @@ class _TicketGridState extends State<TicketGrid> {
               onPressed: () {
                 Navigator.pop(context);
                 context.read<RaffleDetailsBloc>().add(
-                  SetWinningNumber(
-                    raffleId: widget.raffle.id!,
-                    winningNumber: '',
-                  ),
-                );
+                      SetWinningNumber(
+                        raffleId: widget.raffle.id!,
+                        winningNumber: '',
+                      ),
+                    );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -165,14 +181,14 @@ class _TicketGridState extends State<TicketGrid> {
 
   Widget _buildPagination() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: Column(
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
               final isSmallScreen = constraints.maxWidth < 400;
               final is4Digits = widget.raffle.digitCount >= 4;
-              
+
               return Column(
                 children: [
                   // Indicador de página actual
@@ -190,9 +206,8 @@ class _TicketGridState extends State<TicketGrid> {
                     children: [
                       if (!isSmallScreen)
                         IconButton(
-                          onPressed: _currentPage > 0
-                              ? () => _onPageChanged(0)
-                              : null,
+                          onPressed:
+                              _currentPage > 0 ? () => _onPageChanged(0) : null,
                           icon: const Icon(Icons.first_page),
                           padding: EdgeInsets.zero,
                           constraints: const BoxConstraints(
@@ -214,7 +229,8 @@ class _TicketGridState extends State<TicketGrid> {
                       // Selector de página con diseño adaptativo
                       Container(
                         constraints: BoxConstraints(
-                          maxWidth: is4Digits ? 150 : (isSmallScreen ? 200 : 300),
+                          maxWidth:
+                              is4Digits ? 150 : (isSmallScreen ? 200 : 300),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<int>(
@@ -223,13 +239,13 @@ class _TicketGridState extends State<TicketGrid> {
                             isExpanded: true,
                             items: List.generate(totalPages, (index) {
                               final start = index * itemsPerPage + 1;
-                              final end = math.min((index + 1) * itemsPerPage, widget.tickets.length);
+                              final end = math.min((index + 1) * itemsPerPage,
+                                  widget.tickets.length);
                               return DropdownMenuItem(
+                                alignment: Alignment.center,
                                 value: index,
                                 child: Text(
-                                  is4Digits
-                                      ? 'Boletos ${_formatNumber(start)}-${_formatNumber(end)}'
-                                      : '$start-$end',
+                                  'Boletos ${_formatNumber(start)}-${_formatNumber(end)}',
                                   style: TextStyle(
                                     fontSize: is4Digits ? 12 : 14,
                                     overflow: TextOverflow.ellipsis,
@@ -285,7 +301,7 @@ class _TicketGridState extends State<TicketGrid> {
       children: [
         // Botón de acción (aleatorio o ver ganador)
         Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
+          padding: const EdgeInsets.only(bottom: 1),
           child: BlocBuilder<RaffleDetailsBloc, RaffleDetailsState>(
             builder: (context, state) {
               if (state is RaffleDetailsLoaded) {
@@ -296,18 +312,20 @@ class _TicketGridState extends State<TicketGrid> {
             },
           ),
         ),
-        
+
         // Grid de tickets
         BlocBuilder<RaffleDetailsBloc, RaffleDetailsState>(
           builder: (context, state) {
-            final currentRaffle = state is RaffleDetailsLoaded ? state.raffle : widget.raffle;
-            final currentTickets = state is RaffleDetailsLoaded ? state.tickets : widget.tickets;
-            
+            final currentRaffle =
+                state is RaffleDetailsLoaded ? state.raffle : widget.raffle;
+            final currentTickets =
+                state is RaffleDetailsLoaded ? state.tickets : widget.tickets;
+
             // Ajustar el número de columnas según la cantidad de dígitos
-            final crossAxisCount = currentRaffle.gameType == 'lottery' 
+            final crossAxisCount = currentRaffle.gameType == 'lottery'
                 ? (currentRaffle.digitCount >= 4 ? 5 : 10)
                 : 10;
-            
+
             return GridView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -320,26 +338,33 @@ class _TicketGridState extends State<TicketGrid> {
               itemCount: currentPageTickets.length,
               itemBuilder: (context, index) {
                 final ticket = currentPageTickets[index];
-                final isWinner = currentRaffle.winningNumber == _formatNumber(ticket.number);
+                final isWinner =
+                    currentRaffle.winningNumber == _formatNumber(ticket.number);
                 final is4Digits = currentRaffle.digitCount >= 4;
-                
+
                 return InkWell(
                   onTap: () => widget.onTap(ticket),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: isWinner ? Colors.amber.shade200 : _getTicketColor(ticket.status),
+                      color: isWinner
+                          ? Colors.amber.shade200
+                          : _getTicketColor(ticket.status),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: isWinner ? Colors.amber.shade700 : Colors.grey.shade300,
+                        color: isWinner
+                            ? Colors.amber.shade700
+                            : _getTicketBorderColor(ticket.status),
                         width: isWinner ? 2 : 1,
                       ),
-                      boxShadow: isWinner ? [
-                        BoxShadow(
-                          color: Colors.amber.shade200.withOpacity(0.5),
-                          blurRadius: 4,
-                          spreadRadius: 1,
-                        ),
-                      ] : null,
+                      boxShadow: isWinner
+                          ? [
+                              BoxShadow(
+                                color: Colors.amber.shade200.withOpacity(0.5),
+                                blurRadius: 4,
+                                spreadRadius: 1,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Center(
                       child: Column(
@@ -355,28 +380,17 @@ class _TicketGridState extends State<TicketGrid> {
                               child: Text(
                                 _formatNumber(ticket.number),
                                 style: TextStyle(
-                                  fontSize: _getTicketFontSize(currentRaffle.digitCount),
-                                  fontWeight: isWinner || ticket.status != 'available' ? FontWeight.bold : FontWeight.normal,
+                                  fontSize: _getTicketFontSize(
+                                      currentRaffle.digitCount),
+                                  fontWeight:
+                                      isWinner || ticket.status != 'available'
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                   color: Colors.black87,
                                 ),
                               ),
                             ),
                           ),
-                          // Solo mostrar iconos si no es de 4 dígitos
-                          if (!is4Digits) ...[
-                            if (ticket.status != 'available')
-                              Icon(
-                                ticket.status == 'sold' ? Icons.lock : Icons.access_time,
-                                size: 12,
-                                color: Colors.black54,
-                              ),
-                            if (isWinner)
-                              const Icon(
-                                Icons.emoji_events,
-                                size: 14,
-                                color: Colors.amber,
-                              ),
-                          ],
                         ],
                       ),
                     ),
@@ -386,30 +400,32 @@ class _TicketGridState extends State<TicketGrid> {
             );
           },
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Paginación inferior
         _buildPagination(),
-        
+
         // Leyenda
         BlocBuilder<RaffleDetailsBloc, RaffleDetailsState>(
           builder: (context, state) {
-            final currentRaffle = state is RaffleDetailsLoaded ? state.raffle : widget.raffle;
-            
+            final currentRaffle =
+                state is RaffleDetailsLoaded ? state.raffle : widget.raffle;
+
             return Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildLegendItem('Disponible', Colors.green.shade100),
+                  _buildLegendItem('Disponible', AppColors.statusAvailable),
                   const SizedBox(width: 16),
-                  _buildLegendItem('Reservado', Colors.yellow.shade100),
+                  _buildLegendItem('Reservado', AppColors.statusReserved),
                   const SizedBox(width: 16),
-                  _buildLegendItem('Vendido', Colors.red.shade100),
-                  if (currentRaffle.winningNumber != null && currentRaffle.winningNumber!.isNotEmpty) ...[
+                  _buildLegendItem('Vendido', AppColors.statusSold),
+                  if (currentRaffle.winningNumber != null &&
+                      currentRaffle.winningNumber!.isNotEmpty) ...[
                     const SizedBox(width: 16),
-                    _buildLegendItem('Ganador', Colors.amber.shade200),
+                    _buildLegendItem('Ganador', AppColors.awardGold),
                   ],
                 ],
               ),
@@ -422,7 +438,7 @@ class _TicketGridState extends State<TicketGrid> {
 
   Widget _buildActionButton([Raffle? currentRaffle]) {
     final raffle = currentRaffle ?? widget.raffle;
-    
+
     if (raffle.winningNumber != null && raffle.winningNumber!.isNotEmpty) {
       return ElevatedButton.icon(
         onPressed: () => _showWinningNumberDialog(context),
