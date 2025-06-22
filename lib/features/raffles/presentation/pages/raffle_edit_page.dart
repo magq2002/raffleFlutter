@@ -216,7 +216,9 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
                 ElevatedButton(
                   onPressed: _submit,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: AppColors.buttonGreenBackground,
+                    foregroundColor: AppColors.buttonGreenForeground,
+                    side: BorderSide(color: AppColors.buttonGreenBorder),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -227,7 +229,6 @@ class _RaffleEditPageState extends State<RaffleEditPage> {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
                     ),
                   ),
                 ),

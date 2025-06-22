@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:raffle/core/theme/app_colors.dart';
 import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 
 class BuyersSummary extends StatelessWidget {
@@ -71,12 +72,12 @@ class BuyersSummary extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
+                        const Text(
                           'Ver lista',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Theme.of(context).primaryColor,
+                            color: AppColors.buttonGreenForeground,
                           ),
                         ),
                         const SizedBox(width: 4),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:raffle/core/theme/app_colors.dart';
+import 'package:raffle/core/theme/button_styles.dart';
 import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 import 'package:pdf/pdf.dart';
@@ -314,7 +315,7 @@ class _BuyersListPageState extends State<BuyersListPage> {
                   ),
                   child: pw.Table.fromTextArray(
                     border: pw.TableBorder.all(color: PdfColors.black),
-                    headerDecoration: pw.BoxDecoration(
+                    headerDecoration: const pw.BoxDecoration(
                       color: PdfColors.grey300,
                     ),
                     headerHeight: 25,
@@ -474,7 +475,10 @@ class _BuyersListPageState extends State<BuyersListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
+        backgroundColor: AppColors.backgroundCard,
+        foregroundColor: AppColors.text,
         title: const Text('Lista de Compradores'),
         actions: [
           PopupMenuButton<String>(
@@ -510,10 +514,22 @@ class _BuyersListPageState extends State<BuyersListPage> {
                     Expanded(
                       flex: 2,
                       child: TextField(
+                        style: TextStyle(color: AppColors.text),
                         decoration: InputDecoration(
                           hintText: _getSearchHint(),
-                          prefixIcon: const Icon(Icons.search),
-                          border: const OutlineInputBorder(),
+                          hintStyle: TextStyle(color: AppColors.textHint),
+                          prefixIcon: Icon(Icons.search, color: AppColors.text),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.primary),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.backgroundInput,
                         ),
                         onChanged: (value) {
                           setState(() {
@@ -528,36 +544,48 @@ class _BuyersListPageState extends State<BuyersListPage> {
                       flex: 1,
                       child: InputDecorator(
                         decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: AppColors.primary),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.backgroundInput,
                           contentPadding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
                             value: _searchFilter,
                             isExpanded: true,
+                            style: TextStyle(color: AppColors.text),
+                            dropdownColor: AppColors.backgroundModal,
                             onChanged: (String? newValue) {
                               setState(() {
                                 _searchFilter = newValue!;
                                 _filterTickets();
                               });
                             },
-                            items: const [
+                            items: [
                               DropdownMenuItem(
                                 value: 'all',
-                                child: Text('Todo'),
+                                child: Text('Todo', style: TextStyle(color: AppColors.text)),
                               ),
                               DropdownMenuItem(
                                 value: 'number',
-                                child: Text('Número'),
+                                child: Text('Número', style: TextStyle(color: AppColors.text)),
                               ),
                               DropdownMenuItem(
                                 value: 'name',
-                                child: Text('Nombre'),
+                                child: Text('Nombre', style: TextStyle(color: AppColors.text)),
                               ),
                               DropdownMenuItem(
                                 value: 'contact',
-                                child: Text('Contacto'),
+                                child: Text('Contacto', style: TextStyle(color: AppColors.text)),
                               ),
                             ],
                           ),
@@ -568,6 +596,13 @@ class _BuyersListPageState extends State<BuyersListPage> {
                 ),
                 const SizedBox(height: 16),
                 SegmentedButton<String>(
+                  style: SegmentedButton.styleFrom(
+                    backgroundColor: AppColors.backgroundCard,
+                    foregroundColor: AppColors.text,
+                    selectedBackgroundColor: AppColors.primary,
+                    selectedForegroundColor: AppColors.text, // Texto blanco cuando está seleccionado
+                    side: BorderSide(color: AppColors.border),
+                  ),
                   segments: const [
                     ButtonSegment(
                       value: 'all',
@@ -603,17 +638,38 @@ class _BuyersListPageState extends State<BuyersListPage> {
                 final ticket = _paginatedTickets[index];
                 return ListTile(
                   leading: CircleAvatar(
-                    child: Text(ticket.number.toString()),
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: AppColors.text,
+                    child: Text(
+                      ticket.number.toString(),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.text, // Números en blanco
+                      ),
+                    ),
                   ),
-                  title: Text(ticket.buyerName ?? ''),
-                  subtitle: Text(ticket.buyerContact ?? ''),
+                  title: Text(
+                    ticket.buyerName ?? '',
+                    style: TextStyle(
+                      color: AppColors.text,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  subtitle: Text(
+                    ticket.buyerContact ?? '',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                   trailing: Chip(
                     label: Text(
                       _getStatusInSpanish(ticket.status),
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: AppColors.text, // Texto blanco para ambos estados
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    backgroundColor:
-                        ticket.status == 'sold' ? Colors.green : Colors.orange,
+                    backgroundColor: ticket.status == 'sold' 
+                        ? AppColors.statusSold 
+                        : AppColors.statusReserved,
                   ),
                 );
               },

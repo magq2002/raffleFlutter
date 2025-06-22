@@ -100,7 +100,8 @@ class RaffleDetailsBloc extends Bloc<RaffleDetailsEvent, RaffleDetailsState> {
 
     on<SetWinningNumber>((event, emit) async {
       try {
-        await localDatasource.updateWinningNumber(
+        // Usar el nuevo método que actualiza el número ganador y finaliza la rifa si es tipo 'app'
+        await repository.setWinningNumberAndFinishRaffle(
             event.raffleId, event.winningNumber);
         add(LoadRaffleDetails(event.raffleId));
       } catch (e) {

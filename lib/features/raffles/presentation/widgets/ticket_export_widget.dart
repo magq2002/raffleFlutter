@@ -1,6 +1,8 @@
 import 'dart:ui' as ui;
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/foundation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
@@ -47,17 +49,36 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
         final file = await File('${tempDir.path}/ticket.png').create();
         await file.writeAsBytes(pngBytes);
         
-        // Para iOS: Resetear el estado inmediatamente antes de compartir
-        if (Platform.isIOS) {
-          setState(() => isProcessing = false);
-        }
-        
-        await Share.shareXFiles([XFile(file.path)],
-            text: '¡Gracias por participar!');
-            
-        // Para Android: Resetear después de compartir
-        if (!Platform.isIOS && mounted) {
-          setState(() => isProcessing = false);
+        try {
+          if (kDebugMode) {
+            print('📱 TicketExport - Iniciando compartir en ${Platform.isIOS ? 'iOS' : 'Android'}');
+          }
+          
+          // Timeout de seguridad para iOS
+          if (Platform.isIOS) {
+            await Future.any([
+              Share.shareXFiles([XFile(file.path)], text: '¡Gracias por participar!'),
+              Future.delayed(const Duration(seconds: 10)), // Timeout de 10 segundos
+            ]);
+          } else {
+            await Share.shareXFiles([XFile(file.path)], text: '¡Gracias por participar!');
+          }
+          
+          if (kDebugMode) {
+            print('📱 TicketExport - Compartir completado');
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('📱 TicketExport - Error al compartir: $e');
+          }
+        } finally {
+          // Resetear el estado siempre, sin importar la plataforma
+          if (mounted) {
+            if (kDebugMode) {
+              print('📱 TicketExport - Reseteando estado isProcessing = false');
+            }
+            setState(() => isProcessing = false);
+          }
         }
       } else {
         final hasAccess = await Gal.hasAccess(toAlbum: true);
@@ -245,6 +266,11 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                   onPressed: () => _exportTicket(share: true),
                   icon: const Icon(Icons.share),
                   label: const Text('WhatsApp'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonGreenBackground,
+                    foregroundColor: AppColors.buttonGreenForeground,
+                    side: BorderSide(color: AppColors.buttonGreenBorder),
+                  ),
                 ),
               ),
               const SizedBox(width: 4),
@@ -253,6 +279,11 @@ class _TicketExportWidgetState extends State<TicketExportWidget> {
                   onPressed: () => _exportTicket(share: false),
                   icon: const Icon(Icons.download),
                   label: const Text('Descargar'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonGreenBackground,
+                    foregroundColor: AppColors.buttonGreenForeground,
+                    side: BorderSide(color: AppColors.buttonGreenBorder),
+                  ),
                 ),
               ),
             ],

@@ -47,8 +47,10 @@ class AppTheme {
       // Elevated Button Theme
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.black,
+          backgroundColor: AppColors.buttonGreenBackground,
+          foregroundColor: AppColors.buttonGreenForeground,
+          side: BorderSide(color: AppColors.buttonGreenBorder),
+          elevation: 2,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -61,8 +63,8 @@ class AppTheme {
       
       // Floating Action Button Theme
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primary,
-        foregroundColor: Colors.black,
+        backgroundColor: AppColors.buttonGreenBackground,
+        foregroundColor: AppColors.buttonGreenForeground,
       ),
       
       // Input Decoration Theme
@@ -150,6 +152,15 @@ class AppTheme {
         bodySmall: TextStyle(
           color: AppColors.textSecondary,
           fontSize: 12,
+        ),
+      ),
+      
+      // SnackBar Theme
+      snackBarTheme: SnackBarThemeData(
+        backgroundColor: AppColors.backgroundModal,
+        contentTextStyle: const TextStyle(color: AppColors.text),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
       ),
     );

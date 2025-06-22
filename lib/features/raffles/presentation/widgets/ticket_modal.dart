@@ -154,6 +154,8 @@ class _TicketModalState extends State<TicketModal> with TickerProviderStateMixin
 
   Widget _statusButton(BuildContext context, String value, Color color) {
     final isSelected = _status == value;
+    final isRaffleExpired = widget.raffle?.status == 'expired';
+    final isDisabled = isRaffleExpired == true && (value == 'sold' || value == 'reserved');
     String label;
     IconData icon;
     
@@ -182,7 +184,14 @@ class _TicketModalState extends State<TicketModal> with TickerProviderStateMixin
         width: double.infinity,
         height: _getButtonHeight(context),
         decoration: BoxDecoration(
-          gradient: isSelected ? LinearGradient(
+          gradient: isDisabled ? LinearGradient(
+            colors: [
+              Colors.grey[900]!,
+              Colors.grey[800]!,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ) : isSelected ? LinearGradient(
             colors: [
               color.withOpacity(0.8), 
               color,
@@ -222,7 +231,7 @@ class _TicketModalState extends State<TicketModal> with TickerProviderStateMixin
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => setState(() => _status = value),
+            onTap: isDisabled ? null : () => setState(() => _status = value),
             borderRadius: BorderRadius.circular(20),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: _getSpacing(context, 16)),
@@ -237,7 +246,7 @@ class _TicketModalState extends State<TicketModal> with TickerProviderStateMixin
                     ),
                     child: Icon(
                       icon,
-                      color: Colors.white,
+                      color: isDisabled ? Colors.grey[600] : Colors.white,
                       size: _getFontSize(context, 20),
                     ),
                   ),
@@ -248,7 +257,7 @@ class _TicketModalState extends State<TicketModal> with TickerProviderStateMixin
                       child: Text(
                         label,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: isDisabled ? Colors.grey[600] : Colors.white,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                           fontSize: _getFontSize(context, 14),
                           letterSpacing: 0.5,
@@ -768,6 +777,42 @@ class _TicketModalState extends State<TicketModal> with TickerProviderStateMixin
                               ],
                             ),
                             SizedBox(height: _getSpacing(context, 16)),
+                            
+                            // Mensaje informativo cuando la rifa está expirada
+                            if (widget.raffle?.status == 'expired') ...[
+                              Container(
+                                padding: EdgeInsets.all(_getSpacing(context, 12)),
+                                margin: EdgeInsets.only(bottom: _getSpacing(context, 16)),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Colors.orange.withOpacity(0.5),
+                                    width: 1,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.info_outline,
+                                      color: Colors.orange,
+                                      size: _getFontSize(context, 20),
+                                    ),
+                                    SizedBox(width: _getSpacing(context, 12)),
+                                    Expanded(
+                                      child: Text(
+                                        'Esta rifa ha finalizado. Solo se pueden liberar tickets, no vender ni reservar.',
+                                        style: TextStyle(
+                                          color: Colors.orange,
+                                          fontSize: _getFontSize(context, 13),
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             
                             _statusButton(context, 'sold', const Color(0xFFE53E3E)),
                             _statusButton(context, 'reserved', const Color(0xFFFF8C00)),

@@ -88,7 +88,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                           ? const Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.add_photo_alternate, size: 50),
+                                Icon(Icons.add_a_photo, size: 50 ,color: AppColors.background,),
                                 SizedBox(height: 8),
                                 Text('Toca para agregar una imagen', style: TextStyle(color: AppColors.textBlack)),
                               ],
@@ -342,7 +342,9 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
+                    backgroundColor: AppColors.buttonGreenBackground,
+                    foregroundColor: AppColors.buttonGreenForeground,
+                    side: BorderSide(color: AppColors.buttonGreenBorder),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -350,7 +352,7 @@ class _RaffleCreatePageState extends State<RaffleCreatePage> {
                   ),
                   child: const Text(
                     'Crear Rifa',
-                    style: TextStyle(fontSize: 16, color: AppColors.text),
+                    style: TextStyle(fontSize: 16),
                   ),
                 ),
                 const SizedBox(height: 16),

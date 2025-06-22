@@ -32,6 +32,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
   final GlobalKey repaintKey = GlobalKey();
   bool isProcessing = false;
   Color selectedBackgroundColor = Colors.deepPurple;
+  Color selectedTextColor = Colors.white;
+  bool isBoldText = true;
   double logoSize = 100;
   double titleSize = 24;
   double gridOpacity = 0.8;
@@ -145,12 +147,39 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Seleccionar Color'),
+        title: const Text('Seleccionar Color de Fondo'),
         content: SingleChildScrollView(
           child: ColorPicker(
             pickerColor: selectedBackgroundColor,
             onColorChanged: (color) =>
                 setState(() => selectedBackgroundColor = color),
+            pickerAreaHeightPercent: 0.8,
+            enableAlpha: false,
+            displayThumbColor: true,
+            showLabel: true,
+            paletteType: PaletteType.hsv,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Aceptar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showTextColorPicker() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Seleccionar Color de Texto'),
+        content: SingleChildScrollView(
+          child: ColorPicker(
+            pickerColor: selectedTextColor,
+            onColorChanged: (color) =>
+                setState(() => selectedTextColor = color),
             pickerAreaHeightPercent: 0.8,
             enableAlpha: false,
             displayThumbColor: true,
@@ -256,9 +285,10 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
             const SizedBox(width: 4),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: selectedTextColor,
                 fontSize: 12,
+                fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ],
@@ -266,10 +296,10 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
         const SizedBox(height: 4),
         Text(
           '$count ($percentage%)',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: selectedTextColor,
             fontSize: 12,
-            fontWeight: FontWeight.bold,
+            fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
           ),
         ),
       ],
@@ -360,8 +390,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                 child: Text(
                   '${ticket.number}',
                   style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                    color: selectedTextColor,
+                    fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
                     fontSize: adjustedFontSize,
                   ),
                   textAlign: TextAlign.center,
@@ -459,12 +489,12 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                     // Título
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
+                      child:                       Text(
                         widget.raffle.name,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: selectedTextColor,
                           fontSize: titleSize,
-                          fontWeight: FontWeight.bold,
+                          fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
                           shadows: const [
                             Shadow(
                               offset: Offset(0, 2),
@@ -500,18 +530,18 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.confirmation_number_outlined,
-                                    color: Colors.white,
+                                    color: selectedTextColor,
                                     size: 20,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Lotería: ${widget.raffle.lotteryNumber}',
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: selectedTextColor,
                                       fontSize: 16,
-                                      fontWeight: FontWeight.w500,
+                                      fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
                                     ),
                                   ),
                                 ],
@@ -521,18 +551,18 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.calendar_today,
-                                  color: Colors.white,
+                                  color: selectedTextColor,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   'Fecha: ${dateFormat.format(widget.raffle.date)}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: selectedTextColor,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
                                   ),
                                 ),
                               ],
@@ -555,11 +585,11 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                         ),
                         child: Text(
                           'Precio: ${currencyFormat.format(widget.raffle.price)}',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: selectedTextColor,
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
+                            fontWeight: isBoldText ? FontWeight.bold : FontWeight.normal,
+                            shadows: const [
                               Shadow(
                                 offset: Offset(0, 1),
                                 blurRadius: 2,
@@ -649,6 +679,30 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                           ),
                         ),
                       ],
+                    ),
+
+                    // Color de texto
+                    ListTile(
+                      title: const Text('Color de texto'),
+                      trailing: GestureDetector(
+                        onTap: _showTextColorPicker,
+                        child: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: selectedTextColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Texto en negrita
+                    SwitchListTile(
+                      title: const Text('Texto en negrita'),
+                      value: isBoldText,
+                      onChanged: (value) => setState(() => isBoldText = value),
                     ),
 
                     // Mostrar fecha y lotería

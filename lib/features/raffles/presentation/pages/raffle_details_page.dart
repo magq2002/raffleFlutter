@@ -95,12 +95,15 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
   }
 
   void _openEditModal(Ticket ticket) {
+    if (raffle == null) return;
+    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => TicketModal(
         ticket: ticket,
+        raffle: raffle!,
         onSubmit: (updatedTicket) {
           Navigator.of(context).pop(); // Cerrar el modal
           _handleTicketUpdate(updatedTicket);
@@ -176,20 +179,63 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                             alignment: Alignment.bottomLeft,
                             child: Padding(
                               padding: const EdgeInsets.all(20),
-                              child: Text(
-                                raffle!.name,
-                                style: TextStyle(
-                                  color: AppColors.text,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                  shadows: [
-                                    Shadow(
-                                      offset: const Offset(0, 2),
-                                      blurRadius: 4,
-                                      color: AppColors.blackWithOpacity(0.38),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    raffle!.name,
+                                    style: TextStyle(
+                                      color: AppColors.text,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                      shadows: [
+                                        Shadow(
+                                          offset: const Offset(0, 2),
+                                          blurRadius: 4,
+                                          color: AppColors.blackWithOpacity(0.38),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  // Mostrar número ganador si existe
+                                  if (raffle!.winningNumber != null && raffle!.winningNumber!.isNotEmpty) ...[
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.awardGold.withOpacity(0.9),
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.awardGold.withOpacity(0.3),
+                                            blurRadius: 8,
+                                            spreadRadius: 1,
+                                          ),
+                                        ],
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(
+                                            Icons.emoji_events,
+                                            color: Colors.black87,
+                                            size: 18,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Ganador: ${raffle!.winningNumber}',
+                                            style: const TextStyle(
+                                              color: Colors.black87,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
-                                ),
+                                ],
                               ),
                             ),
                           ),
@@ -225,6 +271,7 @@ class _RaffleDetailsPageState extends State<RaffleDetailsPage> {
                               onPageChanged: (page) =>
                                   setState(() => currentPage = page),
                             ),
+                            const SizedBox(height: 60)
                           ],
                         ),
                       ),

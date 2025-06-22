@@ -97,4 +97,9 @@ class RaffleRepositoryImpl implements RaffleRepository {
   Future<Map<String, dynamic>?> getRaffleWithTickets(int raffleId) async {
     return await raffleLocalDatasource.getRaffleWithTickets(raffleId);
   }
+
+  @override
+  Future<void> setWinningNumberAndFinishRaffle(int raffleId, String winningNumber) async {
+    await raffleLocalDatasource.setWinningNumberAndFinishRaffle(raffleId, winningNumber);
+  }
 }

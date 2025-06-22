@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:raffle/features/raffles/domain/entities/ticket.dart';
 import 'package:raffle/features/raffles/domain/entities/raffle.dart';
 import 'ticket_export_widget.dart';
@@ -34,6 +35,8 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _status = widget.ticket?.status ?? 'available';
+    
+    // Inicializar los controladores de texto de forma segura para iOS
     _nameCtrl.text = widget.ticket?.buyerName ?? '';
     _contactCtrl.text = widget.ticket?.buyerContact ?? '';
     
@@ -46,6 +49,38 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
       curve: Curves.elasticOut,
     );
     _animationController.forward();
+    
+    // Asegurar que los datos se establezcan correctamente en iOS
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // Debug para iOS
+        if (kDebugMode) {
+          print('🎫 TicketInfoModal - Ticket data:');
+          print('  Status: ${widget.ticket?.status}');
+          print('  Buyer Name: ${widget.ticket?.buyerName}');
+          print('  Buyer Contact: ${widget.ticket?.buyerContact}');
+          print('  Platform: ${defaultTargetPlatform}');
+        }
+        
+        setState(() {
+          _nameCtrl.text = widget.ticket?.buyerName ?? '';
+          _contactCtrl.text = widget.ticket?.buyerContact ?? '';
+        });
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(TicketInfoModal oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Actualizar los datos si el ticket cambió
+    if (oldWidget.ticket != widget.ticket) {
+      setState(() {
+        _status = widget.ticket?.status ?? 'available';
+        _nameCtrl.text = widget.ticket?.buyerName ?? '';
+        _contactCtrl.text = widget.ticket?.buyerContact ?? '';
+      });
+    }
   }
 
   @override
@@ -155,6 +190,8 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
 
   Widget _buildStatusButton(String value, String label, IconData icon, Color color) {
     final isSelected = _status == value;
+    final isRaffleExpired = widget.raffle.status == 'expired';
+    final isDisabled = isRaffleExpired && (value == 'sold' || value == 'reserved');
     
     return Padding(
       padding: EdgeInsets.only(bottom: _getSpacing(context, 12.0)),
@@ -163,7 +200,14 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
         width: double.infinity,
         height: _getButtonHeight(context),
         decoration: BoxDecoration(
-          gradient: isSelected ? LinearGradient(
+          gradient: isDisabled ? LinearGradient(
+            colors: [
+              Colors.grey[900]!,
+              Colors.grey[800]!,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ) : isSelected ? LinearGradient(
             colors: [
               color.withOpacity(0.8), 
               color,
@@ -203,7 +247,7 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () => setState(() => _status = value),
+            onTap: isDisabled ? null : () => setState(() => _status = value),
             borderRadius: BorderRadius.circular(20),
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: _getSpacing(context, 16)),
@@ -218,7 +262,7 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
                     ),
                     child: Icon(
                       icon,
-                      color: Colors.white,
+                      color: isDisabled ? Colors.grey[600] : Colors.white,
                       size: _getFontSize(context, 20),
                     ),
                   ),
@@ -229,7 +273,7 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
                       child: Text(
                         label,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: isDisabled ? Colors.grey[600] : Colors.white,
                           fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
                           fontSize: _getFontSize(context, 14),
                           letterSpacing: 0.5,
@@ -309,6 +353,42 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
                 ),
                 SizedBox(height: _getSpacing(context, 16)),
                 
+                // Mensaje informativo cuando la rifa está expirada
+                if (widget.raffle.status == 'expired') ...[
+                  Container(
+                    padding: EdgeInsets.all(_getSpacing(context, 12)),
+                    margin: EdgeInsets.only(bottom: _getSpacing(context, 16)),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.orange.withOpacity(0.5),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Colors.orange,
+                          size: _getFontSize(context, 20),
+                        ),
+                        SizedBox(width: _getSpacing(context, 12)),
+                        Expanded(
+                          child: Text(
+                            'Esta rifa ha finalizado. Solo se pueden liberar tickets, no vender ni reservar.',
+                            style: TextStyle(
+                              color: Colors.orange,
+                              fontSize: _getFontSize(context, 13),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                
                 _buildStatusButton('available', 'DISPONIBLE', Icons.check_circle_rounded, const Color(0xFF38A169)),
                 _buildStatusButton('reserved', 'RESERVADO', Icons.bookmark_added_rounded, const Color(0xFFFF8C00)),
                 _buildStatusButton('sold', 'VENDIDO', Icons.monetization_on_rounded, const Color(0xFFE53E3E)),
@@ -387,6 +467,7 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
                       ],
                     ),
                     child: TextField(
+                      key: ValueKey('name_${widget.ticket?.number}_${widget.ticket?.buyerName}'),
                       controller: _nameCtrl,
                       style: TextStyle(
                         color: Colors.white,
@@ -453,6 +534,7 @@ class _TicketInfoModalState extends State<TicketInfoModal> with TickerProviderSt
                       ],
                     ),
                     child: TextField(
+                      key: ValueKey('contact_${widget.ticket?.number}_${widget.ticket?.buyerContact}'),
                       controller: _contactCtrl,
                       style: TextStyle(
                         color: Colors.white,

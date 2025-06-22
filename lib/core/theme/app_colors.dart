@@ -25,18 +25,18 @@ class AppColors {
   static const Color statusAvailable = Color(0xFF9E9E9E); // Gris para disponibles
   
   // Estados de rifas
-  static const Color raffleActive = Colors.green;
+  static const Color raffleActive = Color(0xFF4CAF50); // Verde consistente
   static const Color raffleInactive = Colors.orange;
   static const Color raffleExpired = Colors.red;
   
   // Estados de sorteos
-  static const Color giveawayCompleted = Colors.green;
+  static const Color giveawayCompleted = Color(0xFF4CAF50); // Verde consistente
   static const Color giveawayCancelled = Colors.red;
   static const Color giveawayPending = Colors.orange;
   
   // Colores de error y éxito
   static const Color error = Colors.redAccent;
-  static const Color success = Colors.green;
+  static const Color success = Color(0xFF4CAF50); // Verde consistente
   static const Color warning = Colors.orange;
   static const Color info = Colors.blueAccent;
   
@@ -45,6 +45,11 @@ class AppColors {
   static const Color awardSilver = Colors.grey;
   static const Color awardBronze = Colors.brown;
   static const Color awardSpecial = Colors.blueAccent;
+  
+  // Botones unificados - Verde Activo
+  static const Color buttonGreenBackground = Colors.greenAccent; // Verde activo
+  static const Color buttonGreenForeground = Colors.white; // Texto blanco
+  static const Color buttonGreenBorder = Color(0xFF388E3C); // Verde más oscuro para borde
   
   // Gradientes comunes
   static const LinearGradient primaryGradient = LinearGradient(

@@ -162,6 +162,35 @@ class RaffleLocalDatasource {
     );
   }
 
+  /// Actualiza el número ganador y cambia el estado de la rifa a 'expired' para rifas tipo 'app'
+  Future<void> setWinningNumberAndFinishRaffle(int raffleId, String winningNumber) async {
+    final db = await database;
+    final now = DateTime.now().toIso8601String();
+    
+    // Obtener el tipo de juego de la rifa
+    final raffleList = await db.query('raffles', where: 'id = ?', whereArgs: [raffleId]);
+    if (raffleList.isEmpty) return;
+    
+    final gameType = raffleList.first['game_type'] as String;
+    
+    // Si es una rifa tipo 'app', cambiar el estado a 'expired'
+    final Map<String, dynamic> updates = {
+      'winning_number': winningNumber,
+      'updated_at': now,
+    };
+    
+    if (gameType == 'app' && winningNumber.isNotEmpty) {
+      updates['status'] = 'expired';
+    }
+    
+    await db.update(
+      'raffles',
+      updates,
+      where: 'id = ?',
+      whereArgs: [raffleId],
+    );
+  }
+
   Future<void> updateRaffle({
     required int raffleId,
     required String name,

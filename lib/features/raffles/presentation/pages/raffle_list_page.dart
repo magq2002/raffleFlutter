@@ -125,7 +125,7 @@ class _RaffleListPageState extends State<RaffleListPage> {
       label: Text(
         label,
         style: TextStyle(
-          color: isSelected ? AppColors.primary : Colors.black,
+          color: isSelected ? AppColors.buttonGreenForeground : Colors.black,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -136,11 +136,10 @@ class _RaffleListPageState extends State<RaffleListPage> {
         });
       },
       backgroundColor: Colors.grey[200],
-      checkmarkColor: AppColors.primary,
+      checkmarkColor: AppColors.buttonGreenForeground,
       color: WidgetStateProperty.resolveWith<Color?>((states) {
         if (states.contains(MaterialState.selected)) {
-          return AppColors.primary
-              .withOpacity(0.2); // fondo si está seleccionado
+          return AppColors.buttonGreenBackground; // fondo verde activo si está seleccionado
         }
         return Colors.white; // fondo blanco para no seleccionados
       }),
@@ -547,7 +546,7 @@ class _RaffleListPageState extends State<RaffleListPage> {
                                             child: Row(
                                               children: [
                                                 Icon(Icons.check_circle_outline,
-                                                    color: Colors.green),
+                                                    color: AppColors.success),
                                                 SizedBox(width: 8),
                                                 Text('Activar'),
                                               ],
@@ -601,8 +600,8 @@ class _RaffleListPageState extends State<RaffleListPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.black,
-        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.buttonGreenForeground,
+        backgroundColor: AppColors.buttonGreenBackground,
         onPressed: () async {
           final bloc = context.read<RaffleBloc>();
 
@@ -628,7 +627,7 @@ class _RaffleListPageState extends State<RaffleListPage> {
   Color _getStatusColor(String status) {
     switch (status) {
       case 'active':
-        return Colors.green;
+        return AppColors.raffleActive;
       case 'inactive':
         return Colors.orange;
       case 'expired':

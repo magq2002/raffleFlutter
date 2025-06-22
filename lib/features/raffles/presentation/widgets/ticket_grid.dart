@@ -77,6 +77,19 @@ class _TicketGridState extends State<TicketGrid> {
     }
   }
 
+  Color _getTicketTextColor(String status) {
+    switch (status) {
+      case 'sold':
+        return Colors.white; 
+      case 'reserved':
+        return Colors.white; 
+      case 'available':
+        return Colors.white; 
+      default:
+        return Colors.black;
+    }
+  }
+
   void _selectRandomTicket(BuildContext context) {
     final availableTickets =
         widget.tickets.where((t) => t.status == 'available').toList();
@@ -116,18 +129,23 @@ class _TicketGridState extends State<TicketGrid> {
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<RaffleDetailsBloc>().add(
-                    SetWinningNumber(
-                      raffleId: widget.raffle.id!,
-                      winningNumber: _formatNumber(selectedTicket.number),
-                    ),
-                  );
-            },
-            child: const Text('Confirmar'),
-          ),
+                      ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                context.read<RaffleDetailsBloc>().add(
+                      SetWinningNumber(
+                        raffleId: widget.raffle.id!,
+                        winningNumber: _formatNumber(selectedTicket.number),
+                      ),
+                    );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonGreenBackground,
+                foregroundColor: AppColors.buttonGreenForeground,
+                side: const BorderSide(color: AppColors.buttonGreenBorder),
+              ),
+              child: const Text('Confirmar'),
+            ),
         ],
       ),
     );
@@ -386,7 +404,9 @@ class _TicketGridState extends State<TicketGrid> {
                                       isWinner || ticket.status != 'available'
                                           ? FontWeight.bold
                                           : FontWeight.normal,
-                                  color: Colors.black87,
+                                  color: isWinner 
+                                      ? Colors.black87 // Contraste con el dorado del ganador
+                                      : _getTicketTextColor(ticket.status),
                                 ),
                               ),
                             ),
@@ -445,8 +465,9 @@ class _TicketGridState extends State<TicketGrid> {
         icon: const Icon(Icons.emoji_events),
         label: const Text('Ver Número Ganador'),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.green,
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.buttonGreenBackground,
+          foregroundColor: AppColors.buttonGreenForeground,
+          side: const BorderSide(color: AppColors.buttonGreenBorder),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),
       );
