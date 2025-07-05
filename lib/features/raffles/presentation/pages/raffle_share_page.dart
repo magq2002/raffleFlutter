@@ -41,6 +41,8 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
   bool showLogo = true;
   bool isLogoRounded = true;
   bool showDateAndLottery = true;
+  bool showProgressBar = true;
+  bool showPercentageDetails = true;
   String shareMessage = '¡Participa en nuestra rifa!';
   final TextEditingController messageController = TextEditingController();
   File? backgroundImage;
@@ -206,64 +208,68 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 5),
-        Container(
-          height: 12,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white.withOpacity(0.1),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                flex: sold,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.8),
-                    borderRadius: BorderRadius.horizontal(
-                      left: const Radius.circular(12),
-                      right: Radius.circular(
-                          reserved == 0 && available == 0 ? 12 : 0),
-                    ),
-                  ),
-                ),
-              ),
-              if (reserved > 0)
+        // Barra de progreso visual (opcional)
+        if (showProgressBar)
+          Container(
+            height: 12,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.white.withOpacity(0.1),
+            ),
+            child: Row(
+              children: [
                 Expanded(
-                  flex: reserved,
+                  flex: sold,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.orange.withOpacity(0.8),
+                      color: Colors.red.withOpacity(0.8),
                       borderRadius: BorderRadius.horizontal(
-                        right: Radius.circular(available == 0 ? 12 : 0),
+                        left: const Radius.circular(12),
+                        right: Radius.circular(
+                            reserved == 0 && available == 0 ? 12 : 0),
                       ),
                     ),
                   ),
                 ),
-              if (available > 0)
-                Expanded(
-                  flex: available,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.8),
-                      borderRadius: const BorderRadius.horizontal(
-                        right: Radius.circular(12),
+                if (reserved > 0)
+                  Expanded(
+                    flex: reserved,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.orange.withOpacity(0.8),
+                        borderRadius: BorderRadius.horizontal(
+                          right: Radius.circular(available == 0 ? 12 : 0),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                if (available > 0)
+                  Expanded(
+                    flex: available,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.8),
+                        borderRadius: const BorderRadius.horizontal(
+                          right: Radius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        // Detalles de porcentaje (opcionales)
+        if (showPercentageDetails) ...[
+          SizedBox(height: showProgressBar ? 8 : 0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatusLabel('Vendidos', sold, total, Colors.red),
+              _buildStatusLabel('Reservados', reserved, total, Colors.orange),
+              _buildStatusLabel('Disponibles', available, total, Colors.green),
             ],
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildStatusLabel('Vendidos', sold, total, Colors.red),
-            _buildStatusLabel('Reservados', reserved, total, Colors.orange),
-            _buildStatusLabel('Disponibles', available, total, Colors.green),
-          ],
-        ),
+        ],
       ],
     );
   }
@@ -600,7 +606,7 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                         ),
                       ),
                     const SizedBox(height: 20),
-                    // Barra de progreso
+                    // Barra de progreso y detalles
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: _buildProgressBar(),
@@ -698,11 +704,16 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                       ),
                     ),
 
-                    // Texto en negrita
-                    SwitchListTile(
-                      title: const Text('Texto en negrita'),
-                      value: isBoldText,
-                      onChanged: (value) => setState(() => isBoldText = value),
+                    // Controles de visibilidad
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Text(
+                        'Elementos visibles',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
 
                     // Mostrar fecha y lotería
@@ -711,6 +722,36 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                       value: showDateAndLottery,
                       onChanged: (value) =>
                           setState(() => showDateAndLottery = value),
+                    ),
+
+                    // Mostrar precio
+                    SwitchListTile(
+                      title: const Text('Mostrar precio'),
+                      value: showPrice,
+                      onChanged: (value) => setState(() => showPrice = value),
+                    ),
+
+                    // Mostrar barra de progreso
+                    SwitchListTile(
+                      title: const Text('Mostrar barra de progreso'),
+                      value: showProgressBar,
+                      onChanged: (value) =>
+                          setState(() => showProgressBar = value),
+                    ),
+
+                    // Mostrar detalles de porcentaje
+                    SwitchListTile(
+                      title: const Text('Mostrar detalles de porcentaje'),
+                      value: showPercentageDetails,
+                      onChanged: (value) =>
+                          setState(() => showPercentageDetails = value),
+                    ),
+
+                    // Texto en negrita
+                    SwitchListTile(
+                      title: const Text('Texto en negrita'),
+                      value: isBoldText,
+                      onChanged: (value) => setState(() => isBoldText = value),
                     ),
 
                     // Opciones de logo
@@ -770,13 +811,6 @@ class _RaffleSharePageState extends State<RaffleSharePage> {
                         onChanged: (value) =>
                             setState(() => gridOpacity = value),
                       ),
-                    ),
-
-                    // Mostrar precio
-                    SwitchListTile(
-                      title: const Text('Mostrar precio'),
-                      value: showPrice,
-                      onChanged: (value) => setState(() => showPrice = value),
                     ),
 
                     // Mensaje personalizado
